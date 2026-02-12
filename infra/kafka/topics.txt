@@ -1,0 +1,18 @@
+# One topic per line. See docs/system-design/03-communication.md#channels
+# Created by the kafka-init container. Auto topic creation is off.
+
+# Commands (one per service)
+consumer-service.commands
+kitchen-service.commands
+accounting-service.commands
+order-service.commands
+
+# Saga replies
+order-service.saga-replies
+
+# Domain events (one per aggregate type)
+consumer.events
+restaurant.events
+order.events
+ticket.events
+account.events
