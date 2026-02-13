@@ -16,3 +16,15 @@ restaurant.events
 order.events
 ticket.events
 account.events
+
+# Dead-letter topics: messages that a handler cannot process (<topic>.dlq)
+consumer-service.commands.dlq
+kitchen-service.commands.dlq
+accounting-service.commands.dlq
+order-service.commands.dlq
+order-service.saga-replies.dlq
+consumer.events.dlq
+restaurant.events.dlq
+order.events.dlq
+ticket.events.dlq
+account.events.dlq
