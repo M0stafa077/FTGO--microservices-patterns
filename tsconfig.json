@@ -8,6 +8,9 @@
       "path": "libs/contracts"
     },
     {
+      "path": "libs/messaging"
+    },
+    {
       "path": "apps/consumer-service"
     }
   ]

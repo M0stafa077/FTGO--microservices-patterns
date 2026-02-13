@@ -1,0 +1,12 @@
+export const DEAD_LETTER_SUFFIX = '.dlq';
+export const OUTBOX_RELAY_LOCK = 7_301_946_221;
+export const RETENTION_CLEANUP_INTERVAL_MS = 3_600_000;
+export const RETENTION_DELETE_BATCH_SIZE = 1_000;
+export const PRODUCER_SEND_TIMEOUT_MS = 10_000;
+export const PARTITIONS_CONSUMED_CONCURRENTLY = 3;
+export const INITIAL_BACKOFF_MS = 200;
+export const CONNECT_MAX_BACKOFF_MS = 30_000;
+export const UNKNOWN_FAILURE_REASON = 'internal_error';
+export const ERROR_MESSAGE_MAX_LENGTH = 1_000;
+export const ALL_REPLICAS_ACK = -1;
+export const UNKNOWN_MESSAGE_TYPE = '(none)';

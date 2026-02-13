@@ -1,0 +1,11 @@
+export { MessagingConfig } from './config/messaging-config.js';
+export { MessagingHealth } from './health/messaging-health.js';
+export { MessagingModule } from './messaging.module.js';
+export type { MessagingOptions } from './messaging-options.js';
+export { MessagingDatabase } from './persistence/messaging-database.js';
+export type { MessagingTables } from './persistence/messaging-tables.js';
+export { CreateOutboxMessages } from './persistence/migrations/create-outbox-messages.js';
+export { CreateProcessedMessages } from './persistence/migrations/create-processed-messages.js';
+export { MessageController } from './receiving/annotations/message-controller.decorator.js';
+export { OnCommand } from './receiving/annotations/on-command.decorator.js';
+export { OnEvent } from './receiving/annotations/on-event.decorator.js';

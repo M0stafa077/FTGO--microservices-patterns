@@ -1,0 +1,9 @@
+export { HeaderName } from './envelope/header-name.js';
+export { IncomingMessage } from './envelope/incoming-message.js';
+export { MessageHeaders } from './envelope/message-headers.js';
+export { OutgoingMessage } from './envelope/outgoing-message.js';
+export { InvalidMessage } from './errors/invalid-message.js';
+export { MissingHeader } from './errors/missing-header.js';
+export { Outbox } from './outbox.js';
+export { Reply } from './replies/reply.js';
+export { ReplyOutcome } from './replies/reply-outcome.js';
