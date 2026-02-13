@@ -1,13 +1,16 @@
+import type { SchemaMigration } from '@ftgo/common/infrastructure';
+import { CreateOutboxMessages, CreateProcessedMessages } from '@ftgo/messaging/infrastructure';
 import type { Migration, MigrationProvider } from 'kysely/migration';
 
 import { CreateConsumers } from './create-consumers.js';
 import { CreateSessions } from './create-sessions.js';
-import type { SchemaMigration } from './schema-migration.js';
 
 export class ConsumerMigrations implements MigrationProvider {
   private readonly migrations: ReadonlyMap<string, SchemaMigration> = new Map([
     ['0001_create_consumers', new CreateConsumers()],
     ['0002_create_sessions', new CreateSessions()],
+    ['0003_create_outbox_messages', new CreateOutboxMessages()],
+    ['0004_create_processed_messages', new CreateProcessedMessages()],
   ]);
 
   public async getMigrations(): Promise<Record<string, Migration>> {

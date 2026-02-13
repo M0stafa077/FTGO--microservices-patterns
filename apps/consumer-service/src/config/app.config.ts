@@ -1,4 +1,5 @@
 import { Environment } from '@ftgo/common/infrastructure';
+import { MessagingConfig } from '@ftgo/messaging/infrastructure';
 import type { Level } from 'pino';
 
 import { DatabaseConfig } from './database.config.js';
@@ -11,6 +12,7 @@ export class AppConfig {
     public readonly logLevel: Level,
     public readonly database: DatabaseConfig,
     public readonly tokens: TokenConfig,
+    public readonly messaging: MessagingConfig,
   ) {}
 
   public static fromEnvironment(environment: Environment): AppConfig {
@@ -20,6 +22,7 @@ export class AppConfig {
       variables.LOG_LEVEL,
       DatabaseConfig.fromEnvironment(environment),
       TokenConfig.fromEnvironment(environment),
+      MessagingConfig.fromEnvironment(environment),
     );
   }
 }

@@ -17,6 +17,7 @@ export class PostgresSessions implements Sessions {
   public async findById(id: SessionId): Promise<Session | undefined> {
     try {
       const row = await this.database
+        .current()
         .selectFrom('sessions')
         .selectAll()
         .where('id', '=', id.toString())
@@ -30,6 +31,7 @@ export class PostgresSessions implements Sessions {
   public async add(session: Session): Promise<void> {
     try {
       await this.database
+        .current()
         .insertInto('sessions')
         .values(SessionRecord.from(session).toRow())
         .execute();
@@ -49,6 +51,7 @@ export class PostgresSessions implements Sessions {
   private async updateRow(row: SessionsTable): Promise<bigint> {
     try {
       const result = await this.database
+        .current()
         .updateTable('sessions')
         .set({
           refreshTokenHash: row.refreshTokenHash,

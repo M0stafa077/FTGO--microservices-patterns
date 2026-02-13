@@ -2,15 +2,12 @@ import { InvalidInput } from '@ftgo/common';
 
 import { ConsumerId } from '../../consumers/entities/consumer-id.js';
 import type { SessionsTable } from '../../database/tables/sessions.table.js';
-import { RevocationReason } from '../entities/revocation-reason.js';
+import { REVOCATION_REASONS } from '../auth.constants.js';
+import type { RevocationReason } from '../entities/revocation-reason.js';
 import { SessionId } from '../entities/session-id.js';
 import { Session } from '../entities/session.entity.js';
 
 export class SessionRecord {
-  private static readonly REASONS: ReadonlyMap<string, RevocationReason> = new Map(
-    Object.values(RevocationReason).map((reason) => [reason, reason]),
-  );
-
   private constructor(private readonly row: SessionsTable) {}
 
   public static fromRow(row: SessionsTable): SessionRecord {
@@ -54,11 +51,12 @@ export class SessionRecord {
     if (this.row.revocationReason === null) {
       return undefined;
     }
-    const reason = SessionRecord.REASONS.get(this.row.revocationReason);
+    const stored = this.row.revocationReason;
+    const reason = REVOCATION_REASONS.get(stored);
     if (reason === undefined) {
       throw new InvalidInput(
         'session.unknown_revocation_reason',
-        `Unknown revocation reason "${this.row.revocationReason}".`,
+        `Unknown revocation reason "${stored}".`,
       );
     }
     return reason;

@@ -1,11 +1,10 @@
 import { Clock } from '@ftgo/common';
 import { Inject, Injectable } from '@nestjs/common';
 
-import { Consumers } from '../consumers/consumers.js';
-import { Consumer } from '../consumers/entities/consumer.entity.js';
+import { ConsumersService } from '../consumers/consumers.service.js';
+import type { Consumer } from '../consumers/entities/consumer.entity.js';
 import type { EmailAddress } from '../consumers/entities/email-address.js';
 import type { Password } from '../consumers/entities/password.js';
-import { EmailAlreadyRegistered } from '../consumers/errors/email-already-registered.js';
 
 import { RefreshToken } from './entities/refresh-token.js';
 import { RotationOutcome } from './entities/rotation-outcome.js';
@@ -22,7 +21,7 @@ import type { TokenPair } from './tokens/token-pair.js';
 @Injectable()
 export class AuthService {
   public constructor(
-    @Inject(Consumers) private readonly consumers: Consumers,
+    private readonly consumersService: ConsumersService,
     @Inject(Sessions) private readonly sessions: Sessions,
     @Inject(PasswordHashing) private readonly passwordHashing: PasswordHashing,
     private readonly sessionTokens: SessionTokens,
@@ -30,24 +29,16 @@ export class AuthService {
   ) {}
 
   public async register(details: NewConsumer): Promise<Consumer> {
-    if ((await this.consumers.findByEmail(details.email)) !== undefined) {
-      throw new EmailAlreadyRegistered();
-    }
-    const consumer = Consumer.register(
-      {
-        email: details.email,
-        passwordHash: await this.passwordHashing.hash(details.password),
-        name: details.name,
-        phoneNumber: details.phoneNumber,
-      },
-      this.clock.now(),
-    );
-    await this.consumers.add(consumer);
-    return consumer;
+    return this.consumersService.register({
+      email: details.email,
+      passwordHash: await this.passwordHashing.hash(details.password),
+      name: details.name,
+      phoneNumber: details.phoneNumber,
+    });
   }
 
   public async signIn(email: EmailAddress, password: Password): Promise<TokenPair> {
-    const consumer = await this.consumers.findByEmail(email);
+    const consumer = await this.consumersService.findByEmail(email);
     const isValid = await this.passwordHashing.verify(password, consumer?.passwordHash);
     if (consumer === undefined || !isValid) {
       throw new InvalidCredentials();

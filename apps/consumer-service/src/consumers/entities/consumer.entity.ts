@@ -1,4 +1,5 @@
 import { ConsumerId } from './consumer-id.js';
+import { ConsumerRegistered } from './consumer-registered.js';
 import type { ConsumerState } from './consumer-state.js';
 import type { EmailAddress } from './email-address.js';
 import type { PasswordHash } from './password-hash.js';
@@ -15,6 +16,7 @@ export class Consumer {
   private currentName: PersonName;
   private currentPhoneNumber: PhoneNumber | undefined;
   private lastUpdatedAt: Date;
+  private readonly pendingEvents: ConsumerRegistered[] = [];
 
   private constructor(state: ConsumerState) {
     this.id = state.id;
@@ -40,7 +42,7 @@ export class Consumer {
   }
 
   public static register(registration: Registration, now: Date): Consumer {
-    return new Consumer({
+    const consumer = new Consumer({
       id: ConsumerId.generate(),
       email: registration.email,
       passwordHash: registration.passwordHash,
@@ -50,10 +52,16 @@ export class Consumer {
       updatedAt: now,
       version: 0,
     });
+    consumer.pendingEvents.push(new ConsumerRegistered(consumer.id, consumer.name));
+    return consumer;
   }
 
   public static restore(state: ConsumerState): Consumer {
     return new Consumer(state);
+  }
+
+  public releaseEvents(): ReadonlyArray<ConsumerRegistered> {
+    return this.pendingEvents.splice(0);
   }
 
   public updateProfile(name: PersonName, phoneNumber: PhoneNumber | undefined, now: Date): void {

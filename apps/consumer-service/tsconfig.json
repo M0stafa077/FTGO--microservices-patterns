@@ -9,6 +9,12 @@
   "references": [
     {
       "path": "../../libs/common"
+    },
+    {
+      "path": "../../libs/contracts"
+    },
+    {
+      "path": "../../libs/messaging"
     }
   ]
 }

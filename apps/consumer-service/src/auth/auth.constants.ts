@@ -1,5 +1,7 @@
 import { Algorithm, type Options } from '@node-rs/argon2';
 
+import { RevocationReason } from './entities/revocation-reason.js';
+
 export const REFRESH_TOKEN_SECRET_BYTES = 32;
 export const REFRESH_TOKEN_SECRET_FORMAT = /^[A-Za-z0-9_-]{43}$/;
 export const REFRESH_TOKEN_SEPARATOR = '.';
@@ -15,3 +17,6 @@ export const ARGON2_OPTIONS: Options = {
   parallelism: 1,
 };
 export const DECOY_PASSWORD_BYTES = 32;
+export const REVOCATION_REASONS: ReadonlyMap<string, RevocationReason> = new Map(
+  Object.values(RevocationReason).map((reason) => [reason, reason]),
+);

@@ -21,6 +21,7 @@ export class PostgresConsumers implements Consumers {
   public async findByEmail(email: EmailAddress): Promise<Consumer | undefined> {
     try {
       const row = await this.database
+        .current()
         .selectFrom('consumers')
         .selectAll()
         .where('email', '=', email.toString())
@@ -42,6 +43,7 @@ export class PostgresConsumers implements Consumers {
   public async add(consumer: Consumer): Promise<void> {
     try {
       await this.database
+        .current()
         .insertInto('consumers')
         .values(ConsumerRecord.from(consumer).toRow())
         .execute();
@@ -65,6 +67,7 @@ export class PostgresConsumers implements Consumers {
   private async findById(id: ConsumerId): Promise<Consumer | undefined> {
     try {
       const row = await this.database
+        .current()
         .selectFrom('consumers')
         .selectAll()
         .where('id', '=', id.toString())
@@ -78,6 +81,7 @@ export class PostgresConsumers implements Consumers {
   private async updateRow(row: ConsumersTable): Promise<bigint> {
     try {
       const result = await this.database
+        .current()
         .updateTable('consumers')
         .set({
           firstName: row.firstName,

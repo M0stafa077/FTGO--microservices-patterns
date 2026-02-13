@@ -1,4 +1,5 @@
 import { PostgresFailure } from '@ftgo/common/infrastructure';
+import { MessagingHealth } from '@ftgo/messaging/infrastructure';
 import { Controller, Get, Header, Inject } from '@nestjs/common';
 import { sql } from 'kysely';
 
@@ -10,7 +11,10 @@ import { HEALTHY } from './health.constants.js';
 @Public()
 @Controller('health')
 export class HealthController {
-  public constructor(@Inject(ConsumerDatabase) private readonly database: ConsumerDatabase) {}
+  public constructor(
+    @Inject(ConsumerDatabase) private readonly database: ConsumerDatabase,
+    private readonly messaging: MessagingHealth,
+  ) {}
 
   @Get('live')
   @Header('Cache-Control', 'no-store')
@@ -21,11 +25,16 @@ export class HealthController {
   @Get('ready')
   @Header('Cache-Control', 'no-store')
   public async ready(): Promise<{ readonly status: string }> {
+    await this.checkDatabase();
+    this.messaging.verify();
+    return HEALTHY;
+  }
+
+  private async checkDatabase(): Promise<void> {
     try {
-      await sql`select 1`.execute(this.database);
-      return HEALTHY;
+      await sql`select 1`.execute(this.database.current());
     } catch (error) {
-      return PostgresFailure.of(error).rethrow('readiness check');
+      PostgresFailure.of(error).rethrow('readiness check');
     }
   }
 }

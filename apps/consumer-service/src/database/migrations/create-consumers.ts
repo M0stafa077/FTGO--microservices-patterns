@@ -1,6 +1,5 @@
+import type { SchemaMigration } from '@ftgo/common/infrastructure';
 import type { Kysely } from 'kysely';
-
-import type { SchemaMigration } from './schema-migration.js';
 
 export class CreateConsumers implements SchemaMigration {
   public async up(database: Kysely<unknown>): Promise<void> {
