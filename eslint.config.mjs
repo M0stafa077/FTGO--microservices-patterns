@@ -189,6 +189,11 @@ const LAYER_RULES = [
         message:
           'A service depends on an interface (`Consumers`), never on its implementation (`PostgresConsumers`) (CLAUDE.md §5).',
       },
+      {
+        group: ['@ftgo/*/infrastructure', '@ftgo/*/infrastructure/*'],
+        message:
+          'A service depends on interfaces, never on the infrastructure part of a library (CLAUDE.md §8).',
+      },
     ),
     core: true,
   },
@@ -205,6 +210,29 @@ const LAYER_RULES = [
       group: ['@ftgo/*', '!@ftgo/common', '!@ftgo/contracts'],
       message: 'libs/messaging may only use @ftgo/common and @ftgo/contracts (CLAUDE.md §8).',
     }),
+  },
+  {
+    // The framework-free part of libs/messaging. Services import it, so it stays free of drivers.
+    files: ['libs/messaging/src/**/*.ts'],
+    ignores: ['libs/messaging/src/infrastructure/**'],
+    imports: restrictedImports(
+      {
+        group: ['@ftgo/*', '!@ftgo/common', '!@ftgo/contracts', '@ftgo/common/*'],
+        message:
+          'The framework-free part of libs/messaging may only use @ftgo/common and @ftgo/contracts (CLAUDE.md §8).',
+      },
+      {
+        group: ['@nestjs/*', ...INFRASTRUCTURE_TECH.filter((name) => !name.startsWith('typebox'))],
+        message:
+          'The framework-free part of libs/messaging uses no framework, driver, or logger. Put them in src/infrastructure (CLAUDE.md §8).',
+      },
+      {
+        group: ['typebox', 'typebox/*'],
+        allowTypeImports: true,
+        message:
+          'The framework-free part of libs/messaging uses TypeBox types only. Validate in src/infrastructure (CLAUDE.md §8).',
+      },
+    ),
   },
   {
     files: ['libs/saga/**/*.ts'],
@@ -392,8 +420,9 @@ export default defineConfig([
     rules: { 'ftgo/no-comments': 'error' },
   },
 
-  ...LAYER_RULES.map(({ files, imports, core }) => ({
+  ...LAYER_RULES.map(({ files, ignores = [], imports, core }) => ({
     files,
+    ignores,
     rules: {
       'no-restricted-imports': imports,
       ...(core
