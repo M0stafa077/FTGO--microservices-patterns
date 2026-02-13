@@ -34,6 +34,10 @@ export class Duration {
     return new Date(instant.getTime() + this.milliseconds);
   }
 
+  public subtractFrom(instant: Date): Date {
+    return new Date(instant.getTime() - this.milliseconds);
+  }
+
   public toSeconds(): number {
     return Math.floor(this.milliseconds / MILLISECONDS_PER_SECOND);
   }

@@ -14,3 +14,4 @@ export const TRANSIENT_NETWORK_CODES: ReadonlySet<string> = new Set([
 ]);
 export const TRANSIENT_CONNECTION_MESSAGES =
   /timeout exceeded when trying to connect|Connection terminated/i;
+export const ALL_ROUTES = '{*path}';

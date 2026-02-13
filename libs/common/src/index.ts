@@ -9,6 +9,7 @@ export { RuleViolation } from './errors/rule-violation.js';
 export { ServiceUnavailable } from './errors/service-unavailable.js';
 export { Unauthenticated } from './errors/unauthenticated.js';
 export { Uuid } from './identity/uuid.js';
+export { Transactions } from './persistence/transactions.js';
 export { Clock } from './time/clock.js';
 export { Duration } from './time/duration.js';
 export { REDACTED } from './common.constants.js';
