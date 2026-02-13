@@ -2,4 +2,5 @@ packages:
   - 'apps/*'
   - 'libs/*'
 allowBuilds:
+  '@confluentinc/kafka-javascript': true
   unrs-resolver: true

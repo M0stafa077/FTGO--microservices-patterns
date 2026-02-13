@@ -2,5 +2,18 @@
   "name": "@ftgo/contracts",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "typebox": "^1.3.37"
+  },
+  "exports": {
+    ".": {
+      "@ftgo/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b"
+  }
 }
