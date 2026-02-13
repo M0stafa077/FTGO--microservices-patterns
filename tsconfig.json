@@ -5,6 +5,9 @@
       "path": "libs/common"
     },
     {
+      "path": "libs/contracts"
+    },
+    {
       "path": "apps/consumer-service"
     }
   ]
