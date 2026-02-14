@@ -13,3 +13,11 @@ export { ConsumerCreatedPayload } from './consumer/schemas/consumer-created-payl
 export { ValidateOrderByConsumerPayload } from './consumer/schemas/validate-order-by-consumer-payload.schema.js';
 export { ValidateOrderByConsumerReplyPayload } from './consumer/schemas/validate-order-by-consumer-reply-payload.schema.js';
 export { ValidateOrderByConsumer } from './consumer/validate-order-by-consumer.js';
+export { Address } from './schemas/address.schema.js';
+export { RESTAURANT_AGGREGATE, RESTAURANT_EVENTS } from './restaurant/restaurant.constants.js';
+export { RestaurantCreated } from './restaurant/restaurant-created.js';
+export { RestaurantMenuRevised } from './restaurant/restaurant-menu-revised.js';
+export { RestaurantCreatedPayload } from './restaurant/schemas/restaurant-created-payload.schema.js';
+export { RestaurantMenu } from './restaurant/schemas/restaurant-menu.schema.js';
+export { RestaurantMenuItem } from './restaurant/schemas/restaurant-menu-item.schema.js';
+export { RestaurantMenuRevisedPayload } from './restaurant/schemas/restaurant-menu-revised-payload.schema.js';
