@@ -20,7 +20,7 @@ const FORBIDDEN_TYPE_NAME =
 // CLAUDE.md §5, §10: `extends` only for error classes.
 // FtgoError extends Error, each category extends FtgoError, and each specific error extends one category.
 const EXTENDABLE_CLASSES =
-  '^(Error|FtgoError|InvalidInput|Unauthenticated|ResourceNotFound|Conflict|RuleViolation|ServiceUnavailable)$';
+  '^(Error|FtgoError|InvalidInput|Unauthenticated|Forbidden|ResourceNotFound|Conflict|RuleViolation|ServiceUnavailable)$';
 
 const BOOLEAN_PREFIXES = ['is', 'has', 'can'];
 
@@ -432,7 +432,7 @@ export default defineConfig([
   })),
 
   {
-    files: ['apps/*/src/main.ts', 'apps/*/src/migrate.ts'],
+    files: ['apps/*/src/main.ts', 'apps/*/src/migrate.ts', 'apps/*/src/grant-admin.ts'],
     rules: {
       'no-restricted-syntax': [
         'error',
