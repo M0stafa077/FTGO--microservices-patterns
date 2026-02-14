@@ -179,6 +179,7 @@ src/
 
 - `InvalidInput` → 400
 - `Unauthenticated` → 401
+- `Forbidden` (valid identity, missing role) → 403
 - `ResourceNotFound` → 404
 - `Conflict` (duplicate, concurrent modification) → 409
 - `RuleViolation` (illegal state transition, semantic lock, business rule) → 422

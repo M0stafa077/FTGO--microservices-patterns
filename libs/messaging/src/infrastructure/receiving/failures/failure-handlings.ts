@@ -31,6 +31,7 @@ export class FailureHandlings {
     switch (category) {
       case ErrorCategory.InvalidInput:
       case ErrorCategory.Unauthenticated:
+      case ErrorCategory.Forbidden:
         return this.deadLetter;
       case ErrorCategory.NotFound:
       case ErrorCategory.RuleViolation:

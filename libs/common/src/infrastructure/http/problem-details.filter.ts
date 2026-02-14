@@ -91,6 +91,8 @@ export class ProblemDetailsFilter implements ExceptionFilter {
         return HttpStatus.BAD_REQUEST;
       case ErrorCategory.Unauthenticated:
         return HttpStatus.UNAUTHORIZED;
+      case ErrorCategory.Forbidden:
+        return HttpStatus.FORBIDDEN;
       case ErrorCategory.NotFound:
         return HttpStatus.NOT_FOUND;
       case ErrorCategory.Conflict:
