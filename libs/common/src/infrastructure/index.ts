@@ -1,3 +1,7 @@
+export { AccessConfig } from './auth/access.config.js';
+export { AccessModule } from './auth/access.module.js';
+export { Public } from './auth/public.decorator.js';
+export { Requires } from './auth/requires.decorator.js';
 export { CompiledSchema } from './config/compiled-schema.js';
 export { Environment } from './config/environment.js';
 export { CorrelationIds } from './http/correlation-ids.js';

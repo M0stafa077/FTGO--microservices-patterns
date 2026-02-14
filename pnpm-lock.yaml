@@ -280,6 +280,9 @@ importers:
 
   libs/common:
     dependencies:
+      jose:
+        specifier: ^6.2.12
+        version: 6.2.12
       typebox:
         specifier: ^1.3.37
         version: 1.3.37
@@ -287,6 +290,9 @@ importers:
       '@nestjs/common':
         specifier: ^12.1.3
         version: 12.1.3(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
+      '@nestjs/core':
+        specifier: ^12.1.3
+        version: 12.1.3(@nestjs/common@12.1.3(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/platform-express@12.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
