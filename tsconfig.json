@@ -12,6 +12,9 @@
     },
     {
       "path": "apps/consumer-service"
+    },
+    {
+      "path": "apps/restaurant-service"
     }
   ]
 }
