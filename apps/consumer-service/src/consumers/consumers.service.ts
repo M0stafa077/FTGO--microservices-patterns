@@ -33,7 +33,7 @@ export class ConsumersService {
     return this.consumers.findByEmail(email);
   }
 
-  public async getProfile(consumerId: ConsumerId): Promise<Consumer> {
+  public async getById(consumerId: ConsumerId): Promise<Consumer> {
     return this.consumers.getById(consumerId);
   }
 

@@ -87,6 +87,7 @@ export class PostgresConsumers implements Consumers {
           firstName: row.firstName,
           lastName: row.lastName,
           phoneNumber: row.phoneNumber,
+          role: row.role,
           updatedAt: row.updatedAt,
           version: row.version + 1,
         })

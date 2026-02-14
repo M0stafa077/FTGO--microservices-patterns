@@ -1,7 +1,7 @@
-import { Clock } from '@ftgo/common';
+import { Clock, type Role } from '@ftgo/common';
 import { Inject, Injectable } from '@nestjs/common';
 
-import type { ConsumerId } from '../../consumers/entities/consumer-id.js';
+import type { Consumer } from '../../consumers/entities/consumer.entity.js';
 import { RefreshToken } from '../entities/refresh-token.js';
 import { SessionId } from '../entities/session-id.js';
 import { Session } from '../entities/session.entity.js';
@@ -21,16 +21,21 @@ export class SessionTokens {
     @Inject(Clock) private readonly clock: Clock,
   ) {}
 
-  public async startFor(consumerId: ConsumerId): Promise<TokenPair> {
+  public async startFor(consumer: Consumer): Promise<TokenPair> {
     const refreshToken = RefreshToken.issueFor(SessionId.generate());
-    const session = Session.start(consumerId, refreshToken, this.clock.now(), this.policy.lifetime);
+    const session = Session.start(
+      consumer.id,
+      refreshToken,
+      this.clock.now(),
+      this.policy.lifetime,
+    );
     await this.sessions.add(session);
-    return this.issue(session, refreshToken);
+    return this.issue(session, refreshToken, consumer.role);
   }
 
-  public async issue(session: Session, refreshToken: RefreshToken): Promise<TokenPair> {
+  public async issue(session: Session, refreshToken: RefreshToken, role: Role): Promise<TokenPair> {
     const accessToken = await this.accessTokens.issue(
-      new Principal(session.consumerId, session.id),
+      new Principal(session.consumerId, session.id, role),
     );
     return {
       accessToken,

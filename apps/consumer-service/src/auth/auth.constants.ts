@@ -9,6 +9,7 @@ export const BEARER_TOKEN_FORMAT = /^Bearer ([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-
 export const SIGNING_ALGORITHM = 'EdDSA';
 export const ACCESS_TOKEN_TYPE = 'at+jwt';
 export const SESSION_CLAIM = 'sid';
+export const ROLE_CLAIM = 'role';
 export const ACCESS_TOKEN_CLOCK_TOLERANCE_SECONDS = 5;
 export const ARGON2_OPTIONS: Options = {
   algorithm: Algorithm.Argon2id,

@@ -43,7 +43,7 @@ export class AuthService {
     if (consumer === undefined || !isValid) {
       throw new InvalidCredentials();
     }
-    return this.sessionTokens.startFor(consumer.id);
+    return this.sessionTokens.startFor(consumer);
   }
 
   public async refresh(rawRefreshToken: string): Promise<TokenPair> {
@@ -58,7 +58,8 @@ export class AuthService {
     if (outcome === RotationOutcome.ReuseDetected) {
       throw new RefreshTokenReused();
     }
-    return this.sessionTokens.issue(session, next);
+    const consumer = await this.consumersService.getById(session.consumerId);
+    return this.sessionTokens.issue(session, next, consumer.role);
   }
 
   public async signOut(principal: Principal): Promise<void> {

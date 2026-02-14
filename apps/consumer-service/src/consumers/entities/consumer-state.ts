@@ -1,3 +1,5 @@
+import type { Role } from '@ftgo/common';
+
 import type { ConsumerId } from './consumer-id.js';
 import type { EmailAddress } from './email-address.js';
 import type { PasswordHash } from './password-hash.js';
@@ -10,6 +12,7 @@ export interface ConsumerState {
   readonly passwordHash: PasswordHash;
   readonly name: PersonName;
   readonly phoneNumber: PhoneNumber | undefined;
+  readonly role: Role;
   readonly registeredAt: Date;
   readonly updatedAt: Date;
   readonly version: number;

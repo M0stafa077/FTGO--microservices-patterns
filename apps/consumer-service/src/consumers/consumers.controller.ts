@@ -16,7 +16,7 @@ export class ConsumersController {
 
   @Get()
   public async getProfile(@CurrentPrincipal() principal: Principal): Promise<ProfileResponse> {
-    return new ProfileResponse(await this.consumersService.getProfile(principal.consumerId));
+    return new ProfileResponse(await this.consumersService.getById(principal.consumerId));
   }
 
   @Put()

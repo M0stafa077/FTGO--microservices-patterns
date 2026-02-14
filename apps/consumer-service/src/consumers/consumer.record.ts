@@ -1,3 +1,5 @@
+import { InvalidInput, ROLES, type Role } from '@ftgo/common';
+
 import type { ConsumersTable } from '../database/tables/consumers.table.js';
 
 import { ConsumerId } from './entities/consumer-id.js';
@@ -22,6 +24,7 @@ export class ConsumerRecord {
       firstName: consumer.name.firstName,
       lastName: consumer.name.lastName,
       phoneNumber: consumer.phoneNumber?.toString() ?? null,
+      role: consumer.role,
       registeredAt: consumer.registeredAt,
       updatedAt: consumer.updatedAt,
       version: consumer.version,
@@ -35,6 +38,7 @@ export class ConsumerRecord {
       passwordHash: PasswordHash.of(this.row.passwordHash),
       name: PersonName.of(this.row.firstName, this.row.lastName),
       phoneNumber: this.row.phoneNumber === null ? undefined : PhoneNumber.of(this.row.phoneNumber),
+      role: this.role(),
       registeredAt: this.row.registeredAt,
       updatedAt: this.row.updatedAt,
       version: this.row.version,
@@ -43,5 +47,13 @@ export class ConsumerRecord {
 
   public toRow(): ConsumersTable {
     return { ...this.row };
+  }
+
+  private role(): Role {
+    const role = ROLES.get(this.row.role);
+    if (role === undefined) {
+      throw new InvalidInput('consumer.unknown_role', `Unknown role "${this.row.role}".`);
+    }
+    return role;
   }
 }

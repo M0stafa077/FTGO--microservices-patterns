@@ -1,3 +1,5 @@
+import { Role } from '@ftgo/common';
+
 import { ConsumerId } from './consumer-id.js';
 import { ConsumerRegistered } from './consumer-registered.js';
 import type { ConsumerState } from './consumer-state.js';
@@ -15,6 +17,7 @@ export class Consumer {
   public readonly version: number;
   private currentName: PersonName;
   private currentPhoneNumber: PhoneNumber | undefined;
+  private currentRole: Role;
   private lastUpdatedAt: Date;
   private readonly pendingEvents: ConsumerRegistered[] = [];
 
@@ -26,6 +29,7 @@ export class Consumer {
     this.version = state.version;
     this.currentName = state.name;
     this.currentPhoneNumber = state.phoneNumber;
+    this.currentRole = state.role;
     this.lastUpdatedAt = state.updatedAt;
   }
 
@@ -35,6 +39,10 @@ export class Consumer {
 
   public get phoneNumber(): PhoneNumber | undefined {
     return this.currentPhoneNumber;
+  }
+
+  public get role(): Role {
+    return this.currentRole;
   }
 
   public get updatedAt(): Date {
@@ -48,6 +56,7 @@ export class Consumer {
       passwordHash: registration.passwordHash,
       name: registration.name,
       phoneNumber: registration.phoneNumber,
+      role: Role.Consumer,
       registeredAt: now,
       updatedAt: now,
       version: 0,
@@ -67,6 +76,11 @@ export class Consumer {
   public updateProfile(name: PersonName, phoneNumber: PhoneNumber | undefined, now: Date): void {
     this.currentName = name;
     this.currentPhoneNumber = phoneNumber;
+    this.lastUpdatedAt = now;
+  }
+
+  public grantRole(role: Role, now: Date): void {
+    this.currentRole = role;
     this.lastUpdatedAt = now;
   }
 }

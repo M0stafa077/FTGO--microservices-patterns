@@ -34,6 +34,7 @@
     "start:dev": "tsc -b && pnpm run --parallel \"/^dev:/\"",
     "dev:compile": "tsc -b -w --preserveWatchOutput",
     "dev:run": "node --enable-source-maps --env-file-if-exists=../../.env --watch-path=dist dist/main.js | pino-pretty",
-    "migrate": "node --enable-source-maps --env-file-if-exists=../../.env dist/migrate.js"
+    "migrate": "node --enable-source-maps --env-file-if-exists=../../.env dist/migrate.js",
+    "grant-admin": "node --enable-source-maps --env-file-if-exists=../../.env dist/grant-admin.js"
   }
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { Uuid, type Clock } from '@ftgo/common';
+import { ROLES, Uuid, type Clock } from '@ftgo/common';
 import { errors, jwtVerify, SignJWT, type JWTPayload } from 'jose';
 
 import type { TokenConfig } from '../../config/token.config.js';
@@ -8,6 +8,7 @@ import { ConsumerId } from '../../consumers/entities/consumer-id.js';
 import {
   ACCESS_TOKEN_CLOCK_TOLERANCE_SECONDS,
   ACCESS_TOKEN_TYPE,
+  ROLE_CLAIM,
   SESSION_CLAIM,
   SIGNING_ALGORITHM,
 } from '../auth.constants.js';
@@ -31,6 +32,7 @@ export class JwtAccessTokens implements AccessTokens {
     const expiresAt = this.config.accessTokenLifetime.addTo(issuedAt);
     const value = await new SignJWT({
       [SESSION_CLAIM]: principal.sessionId.toString(),
+      [ROLE_CLAIM]: principal.role,
     })
       .setProtectedHeader({
         alg: SIGNING_ALGORITHM,
@@ -56,7 +58,7 @@ export class JwtAccessTokens implements AccessTokens {
         audience: this.config.audience,
         currentDate: this.clock.now(),
         clockTolerance: ACCESS_TOKEN_CLOCK_TOLERANCE_SECONDS,
-        requiredClaims: ['sub', 'exp', 'iat', SESSION_CLAIM],
+        requiredClaims: ['sub', 'exp', 'iat', SESSION_CLAIM, ROLE_CLAIM],
       });
       return this.principalOf(payload);
     } catch (error) {
@@ -70,12 +72,14 @@ export class JwtAccessTokens implements AccessTokens {
   private principalOf(payload: JWTPayload): Principal {
     const consumerId = payload.sub;
     const sessionId = payload[SESSION_CLAIM];
+    const claimedRole = payload[ROLE_CLAIM];
+    const role = typeof claimedRole === 'string' ? ROLES.get(claimedRole) : undefined;
     if (typeof consumerId !== 'string' || !Uuid.isValid(consumerId)) {
       throw new InvalidAccessToken();
     }
-    if (typeof sessionId !== 'string' || !Uuid.isValid(sessionId)) {
+    if (typeof sessionId !== 'string' || !Uuid.isValid(sessionId) || role === undefined) {
       throw new InvalidAccessToken();
     }
-    return new Principal(ConsumerId.of(consumerId), SessionId.of(sessionId));
+    return new Principal(ConsumerId.of(consumerId), SessionId.of(sessionId), role);
   }
 }
