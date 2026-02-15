@@ -1,5 +1,6 @@
 export { ConcurrentModification } from './errors/concurrent-modification.js';
 export { Conflict } from './errors/conflict.js';
+export { CurrencyMismatch } from './errors/currency-mismatch.js';
 export { ErrorCategory } from './errors/error-category.js';
 export type { FieldIssue } from './errors/field-issue.js';
 export { Forbidden } from './errors/forbidden.js';
@@ -18,3 +19,4 @@ export { REDACTED, ROLES } from './common.constants.js';
 export { Address } from './values/address.js';
 export { Currency } from './values/currency.js';
 export { Money } from './values/money.js';
+export { Quantity } from './values/quantity.js';

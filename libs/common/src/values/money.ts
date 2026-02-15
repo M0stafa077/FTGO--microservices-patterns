@@ -1,6 +1,8 @@
+import { CurrencyMismatch } from '../errors/currency-mismatch.js';
 import { InvalidInput } from '../errors/invalid-input.js';
 
 import type { Currency } from './currency.js';
+import type { Quantity } from './quantity.js';
 
 export class Money {
   private constructor(
@@ -16,6 +18,17 @@ export class Money {
       );
     }
     return new Money(amount, currency);
+  }
+
+  public add(other: Money): Money {
+    if (!this.hasSameCurrencyAs(other)) {
+      throw new CurrencyMismatch(this.currency, other.currency);
+    }
+    return Money.of(this.amount + other.amount, this.currency);
+  }
+
+  public multiply(quantity: Quantity): Money {
+    return Money.of(this.amount * quantity.value, this.currency);
   }
 
   public hasSameCurrencyAs(other: Money): boolean {
