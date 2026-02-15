@@ -1,5 +1,7 @@
 export { AccessConfig } from './auth/access.config.js';
 export { AccessModule } from './auth/access.module.js';
+export { Caller } from './auth/caller.js';
+export { CurrentCaller } from './auth/current-caller.decorator.js';
 export { Public } from './auth/public.decorator.js';
 export { Requires } from './auth/requires.decorator.js';
 export { CompiledSchema } from './config/compiled-schema.js';
