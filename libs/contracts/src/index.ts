@@ -21,3 +21,8 @@ export { RestaurantCreatedPayload } from './restaurant/schemas/restaurant-create
 export { RestaurantMenu } from './restaurant/schemas/restaurant-menu.schema.js';
 export { RestaurantMenuItem } from './restaurant/schemas/restaurant-menu-item.schema.js';
 export { RestaurantMenuRevisedPayload } from './restaurant/schemas/restaurant-menu-revised-payload.schema.js';
+export { ORDER_AGGREGATE, ORDER_EVENTS } from './order/order.constants.js';
+export { OrderCreated } from './order/order-created.js';
+export { OrderCreatedPayload } from './order/schemas/order-created-payload.schema.js';
+export { OrderDetails } from './order/schemas/order-details.schema.js';
+export { OrderLineItem } from './order/schemas/order-line-item.schema.js';
