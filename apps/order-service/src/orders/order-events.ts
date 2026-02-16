@@ -1,0 +1,19 @@
+import { Outbox } from '@ftgo/messaging';
+import { Inject, Injectable } from '@nestjs/common';
+
+import type { Order } from './entities/order.entity.js';
+import { OrderEventMessages } from './order-event-messages.js';
+
+@Injectable()
+export class OrderEvents {
+  public constructor(
+    @Inject(Outbox) private readonly outbox: Outbox,
+    private readonly messages: OrderEventMessages,
+  ) {}
+
+  public async appendEventsOf(order: Order): Promise<void> {
+    for (const event of order.releaseEvents()) {
+      await this.outbox.append(this.messages.of(event));
+    }
+  }
+}

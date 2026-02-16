@@ -12,6 +12,7 @@ import { SERVICE_NAME } from './app.constants.js';
 import type { AppConfig } from './config/app.config.js';
 import { DatabaseModule } from './database/database.module.js';
 import { HealthModule } from './health/health.module.js';
+import { OrdersModule } from './orders/orders.module.js';
 import { RestaurantsModule } from './restaurants/restaurants.module.js';
 
 @Module({})
@@ -26,6 +27,7 @@ export class AppModule {
         DatabaseModule.with(config.database),
         MessagingModule.with({ serviceName: SERVICE_NAME, config: config.messaging }),
         RestaurantsModule,
+        OrdersModule,
         HealthModule,
       ],
       providers: [{ provide: APP_FILTER, useClass: ProblemDetailsFilter }],
