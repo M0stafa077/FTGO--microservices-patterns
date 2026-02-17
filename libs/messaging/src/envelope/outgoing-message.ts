@@ -1,3 +1,4 @@
+import { Uuid } from '@ftgo/common';
 import { FailureReplyPayload, type CommandDefinition, type EventDefinition } from '@ftgo/contracts';
 import type { Static, TSchema } from 'typebox';
 
@@ -6,8 +7,11 @@ import type { Reply } from '../replies/reply.js';
 import { HeaderName } from './header-name.js';
 import type { IncomingMessage } from './incoming-message.js';
 import { MessageHeaders } from './message-headers.js';
+import type { SagaRouting } from './saga-routing.js';
 
 export class OutgoingMessage {
+  public readonly messageId: string = Uuid.generate().toString();
+
   private constructor(
     public readonly channel: string,
     public readonly key: string,
@@ -28,6 +32,25 @@ export class OutgoingMessage {
     return new OutgoingMessage(
       definition.channel,
       aggregateId,
+      headers,
+      payload,
+      definition.payload,
+    );
+  }
+
+  public static command<Payload extends TSchema>(
+    definition: CommandDefinition<Payload, TSchema>,
+    payload: Static<Payload>,
+    saga: SagaRouting,
+  ): OutgoingMessage {
+    const headers = MessageHeaders.empty()
+      .with(HeaderName.Type, definition.type)
+      .with(HeaderName.SagaType, saga.sagaType)
+      .with(HeaderName.SagaId, saga.sagaId)
+      .with(HeaderName.ReplyTo, saga.replyTo);
+    return new OutgoingMessage(
+      definition.channel,
+      saga.sagaId,
       headers,
       payload,
       definition.payload,

@@ -10,3 +10,4 @@ export const UNKNOWN_FAILURE_REASON = 'internal_error';
 export const ERROR_MESSAGE_MAX_LENGTH = 1_000;
 export const ALL_REPLICAS_ACK = -1;
 export const UNKNOWN_MESSAGE_TYPE = '(none)';
+export const ANY_MESSAGE_TYPE = '*';

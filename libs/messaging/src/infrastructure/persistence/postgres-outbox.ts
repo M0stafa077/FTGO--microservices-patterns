@@ -1,4 +1,4 @@
-import { Clock, Uuid } from '@ftgo/common';
+import { Clock } from '@ftgo/common';
 import { CorrelationScope, PostgresFailure } from '@ftgo/common/infrastructure';
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -20,11 +20,10 @@ export class PostgresOutbox implements Outbox {
 
   public async append(message: OutgoingMessage): Promise<void> {
     this.payloads.validate(message.schema, message.payload);
-    const messageId = Uuid.generate().toString();
     const record = OutboxMessageRecord.from(message, {
-      messageId,
+      messageId: message.messageId,
       createdAt: this.clock.now(),
-      correlationId: this.correlation.current() ?? messageId,
+      correlationId: this.correlation.current() ?? message.messageId,
     });
     try {
       await this.database.current().insertInto('outboxMessages').values(record.toRow()).execute();

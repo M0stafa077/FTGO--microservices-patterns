@@ -1,4 +1,4 @@
-import { Injectable, type OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Optional, type OnModuleInit } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import type { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper.js';
 
@@ -11,28 +11,38 @@ import { CommandHandler } from './handlers/command-handler.js';
 import { EventHandler } from './handlers/event-handler.js';
 import { HandlerMethod } from './handlers/handler-method.js';
 import type { MessageHandler } from './handlers/message-handler.js';
+import { ReplyHandler } from './handlers/reply-handler.js';
+import { ReplyReceiver } from './reply-receiver.js';
 
 @Injectable()
 export class MessageHandlers implements OnModuleInit {
   private readonly handlers = new Map<string, MessageHandler>();
+  private readonly channelHandlers = new Map<string, MessageHandler>();
 
   public constructor(
     private readonly discovery: DiscoveryService,
     private readonly scanner: MetadataScanner,
+    @Optional()
+    @Inject(ReplyReceiver)
+    private readonly replyReceiver: ReplyReceiver | undefined,
   ) {}
 
   public onModuleInit(): void {
     for (const controller of this.discovery.getProviders({ metadataKey: MessageController.KEY })) {
       this.registerMethodsOf(controller);
     }
+    if (this.replyReceiver !== undefined) {
+      this.registerForChannel(new ReplyHandler(this.replyReceiver));
+    }
   }
 
   public find(channel: string, type: string): MessageHandler | undefined {
-    return this.handlers.get(this.keyOf(channel, type));
+    return this.handlers.get(this.keyOf(channel, type)) ?? this.channelHandlers.get(channel);
   }
 
   public channels(): ReadonlyArray<string> {
-    return [...new Set([...this.handlers.values()].map((handler) => handler.channel))];
+    const handlers = [...this.handlers.values(), ...this.channelHandlers.values()];
+    return [...new Set(handlers.map((handler) => handler.channel))];
   }
 
   private registerMethodsOf(controller: InstanceWrapper): void {
@@ -66,6 +76,13 @@ export class MessageHandlers implements OnModuleInit {
       throw new InvalidMessageHandler(`Two handlers are declared for ${handler.type}.`);
     }
     this.handlers.set(key, handler);
+  }
+
+  private registerForChannel(handler: MessageHandler): void {
+    if (this.channelHandlers.has(handler.channel)) {
+      throw new InvalidMessageHandler(`Two handlers are declared for channel ${handler.channel}.`);
+    }
+    this.channelHandlers.set(handler.channel, handler);
   }
 
   private keyOf(channel: string, type: string): string {

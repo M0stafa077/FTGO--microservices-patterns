@@ -9,3 +9,4 @@ export { CreateProcessedMessages } from './persistence/migrations/create-process
 export { MessageController } from './receiving/annotations/message-controller.decorator.js';
 export { OnCommand } from './receiving/annotations/on-command.decorator.js';
 export { OnEvent } from './receiving/annotations/on-event.decorator.js';
+export { ReplyReceiver } from './receiving/reply-receiver.js';
