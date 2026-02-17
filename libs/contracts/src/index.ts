@@ -26,3 +26,7 @@ export { OrderCreated } from './order/order-created.js';
 export { OrderCreatedPayload } from './order/schemas/order-created-payload.schema.js';
 export { OrderDetails } from './order/schemas/order-details.schema.js';
 export { OrderLineItem } from './order/schemas/order-line-item.schema.js';
+export { OrderAuthorized } from './order/order-authorized.js';
+export { OrderRejected } from './order/order-rejected.js';
+export { OrderAuthorizedPayload } from './order/schemas/order-authorized-payload.schema.js';
+export { OrderRejectedPayload } from './order/schemas/order-rejected-payload.schema.js';
