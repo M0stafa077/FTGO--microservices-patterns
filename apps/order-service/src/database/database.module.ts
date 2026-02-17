@@ -1,6 +1,7 @@
 import { Transactions } from '@ftgo/common';
 import { PostgresTransactions } from '@ftgo/common/infrastructure';
 import { MessagingDatabase } from '@ftgo/messaging/infrastructure';
+import { SagaDatabase } from '@ftgo/saga/infrastructure';
 import {
   Global,
   Inject,
@@ -40,7 +41,7 @@ export class DatabaseModule implements OnApplicationShutdown {
         { provide: Transactions, useExisting: PostgresTransactions },
         ...DatabaseModule.databaseViews(),
       ],
-      exports: [Transactions, OrderDatabase, MessagingDatabase],
+      exports: [Transactions, OrderDatabase, MessagingDatabase, SagaDatabase],
     };
   }
 
@@ -54,6 +55,11 @@ export class DatabaseModule implements OnApplicationShutdown {
       {
         provide: MessagingDatabase,
         useFactory: (database: PostgresTransactions<OrderTables>): MessagingDatabase => database,
+        inject: [PostgresTransactions],
+      },
+      {
+        provide: SagaDatabase,
+        useFactory: (database: PostgresTransactions<OrderTables>): SagaDatabase => database,
         inject: [PostgresTransactions],
       },
     ];

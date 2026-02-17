@@ -4,15 +4,18 @@ import type { RestaurantId } from '../../restaurants/entities/restaurant-id.js';
 import type { RestaurantName } from '../../restaurants/entities/restaurant-name.js';
 import type { Restaurant } from '../../restaurants/entities/restaurant.entity.js';
 import { DeliveryTimeInPast } from '../errors/delivery-time-in-past.js';
+import { IllegalStateTransition } from '../errors/illegal-state-transition.js';
 import { UnknownMenuItem } from '../errors/unknown-menu-item.js';
 
 import type { ConsumerId } from './consumer-id.js';
 import type { DeliveryInformation } from './delivery-information.js';
+import { OrderApproved } from './order-approved.js';
 import type { OrderEvent } from './order-event.js';
 import { OrderId } from './order-id.js';
 import { OrderLineItem } from './order-line-item.js';
 import { OrderLineItems } from './order-line-items.js';
 import { OrderPlaced } from './order-placed.js';
+import { OrderRejected } from './order-rejected.js';
 import type { OrderSnapshot } from './order-snapshot.js';
 import { OrderState } from './order-state.js';
 import type { RequestedLineItem } from './requested-line-item.js';
@@ -24,10 +27,10 @@ export class Order {
   public readonly restaurantName: RestaurantName;
   public readonly lineItems: OrderLineItems;
   public readonly deliveryInformation: DeliveryInformation;
-  public readonly state: OrderState;
   public readonly createdAt: Date;
-  public readonly updatedAt: Date;
   public readonly version: number;
+  private currentState: OrderState;
+  private lastUpdatedAt: Date;
   private readonly pendingEvents: OrderEvent[] = [];
 
   private constructor(snapshot: OrderSnapshot) {
@@ -37,10 +40,18 @@ export class Order {
     this.restaurantName = snapshot.restaurantName;
     this.lineItems = snapshot.lineItems;
     this.deliveryInformation = snapshot.deliveryInformation;
-    this.state = snapshot.state;
     this.createdAt = snapshot.createdAt;
-    this.updatedAt = snapshot.updatedAt;
     this.version = snapshot.version;
+    this.currentState = snapshot.state;
+    this.lastUpdatedAt = snapshot.updatedAt;
+  }
+
+  public get state(): OrderState {
+    return this.currentState;
+  }
+
+  public get updatedAt(): Date {
+    return this.lastUpdatedAt;
   }
 
   public static place(
@@ -85,11 +96,29 @@ export class Order {
     return this.lineItems.total();
   }
 
+  public approve(now: Date): void {
+    this.leaveApprovalPending(OrderState.Approved, now);
+    this.pendingEvents.push(new OrderApproved(this.id));
+  }
+
+  public reject(now: Date): void {
+    this.leaveApprovalPending(OrderState.Rejected, now);
+    this.pendingEvents.push(new OrderRejected(this.id));
+  }
+
   public isPlacedBy(consumerId: ConsumerId): boolean {
     return this.consumerId.equals(consumerId);
   }
 
   public releaseEvents(): ReadonlyArray<OrderEvent> {
     return this.pendingEvents.splice(0);
+  }
+
+  private leaveApprovalPending(target: OrderState, now: Date): void {
+    if (this.currentState !== OrderState.ApprovalPending) {
+      throw new IllegalStateTransition(this.id, this.currentState, target);
+    }
+    this.currentState = target;
+    this.lastUpdatedAt = now;
   }
 }
