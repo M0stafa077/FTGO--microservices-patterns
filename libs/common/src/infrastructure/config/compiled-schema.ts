@@ -16,7 +16,11 @@ export class CompiledSchema<T extends TSchema> {
     if (this.validator.Check(value)) {
       return value;
     }
-    throw new InvalidInput(code, message, this.issuesOf(value));
+    throw this.rejectionOf(value, code, message);
+  }
+
+  public rejectionOf(value: unknown, code: string, message: string): InvalidInput {
+    return new InvalidInput(code, message, this.issuesOf(value));
   }
 
   private issuesOf(value: unknown): FieldIssue[] {

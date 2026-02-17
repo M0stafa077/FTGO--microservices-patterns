@@ -16,8 +16,12 @@ export class PostgresTransactions<Tables> implements Transactions {
     return this.active.getStore() ?? this.root;
   }
 
+  public isActive(): boolean {
+    return this.active.getStore() !== undefined;
+  }
+
   public async run<T>(work: () => Promise<T>): Promise<T> {
-    if (this.active.getStore() !== undefined) {
+    if (this.isActive()) {
       return work();
     }
     try {
