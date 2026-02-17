@@ -242,6 +242,36 @@ const LAYER_RULES = [
         'libs/saga may only use @ftgo/common, @ftgo/contracts, and @ftgo/messaging (CLAUDE.md §8).',
     }),
   },
+  {
+    // The framework-free part of libs/saga. Services import it, so it stays free of drivers.
+    files: ['libs/saga/src/**/*.ts'],
+    ignores: ['libs/saga/src/infrastructure/**'],
+    imports: restrictedImports(
+      {
+        group: [
+          '@ftgo/*',
+          '!@ftgo/common',
+          '!@ftgo/contracts',
+          '!@ftgo/messaging',
+          '@ftgo/common/*',
+          '@ftgo/messaging/*',
+        ],
+        message:
+          'The framework-free part of libs/saga may only use @ftgo/common, @ftgo/contracts, and @ftgo/messaging (CLAUDE.md §8).',
+      },
+      {
+        group: ['@nestjs/*', ...INFRASTRUCTURE_TECH.filter((name) => !name.startsWith('typebox'))],
+        message:
+          'The framework-free part of libs/saga uses no framework, driver, or logger. Put them in src/infrastructure (CLAUDE.md §8).',
+      },
+      {
+        group: ['typebox', 'typebox/*'],
+        allowTypeImports: true,
+        message:
+          'The framework-free part of libs/saga uses TypeBox types only. Validate in src/infrastructure (CLAUDE.md §8).',
+      },
+    ),
+  },
 ];
 
 export default defineConfig([
