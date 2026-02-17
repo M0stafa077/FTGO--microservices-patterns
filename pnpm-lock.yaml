@@ -470,7 +470,39 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
 
-  libs/saga: {}
+  libs/saga:
+    dependencies:
+      '@ftgo/common':
+        specifier: workspace:*
+        version: link:../common
+      '@ftgo/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@ftgo/messaging':
+        specifier: workspace:*
+        version: link:../messaging
+      typebox:
+        specifier: ^1.3.37
+        version: 1.3.37
+    devDependencies:
+      '@nestjs/common':
+        specifier: ^12.1.3
+        version: 12.1.3(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
+      '@nestjs/core':
+        specifier: ^12.1.3
+        version: 12.1.3(@nestjs/common@12.1.3(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/platform-express@12.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@types/node':
+        specifier: ^24.19.2
+        version: 24.19.2
+      kysely:
+        specifier: ^0.29.6
+        version: 0.29.6
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
 
 packages:
 

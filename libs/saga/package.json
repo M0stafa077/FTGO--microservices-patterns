@@ -2,5 +2,41 @@
   "name": "@ftgo/saga",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@ftgo/common": "workspace:*",
+    "@ftgo/contracts": "workspace:*",
+    "@ftgo/messaging": "workspace:*",
+    "typebox": "^1.3.37"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^12.1.3",
+    "@nestjs/core": "^12.1.3",
+    "@types/node": "^24.19.2",
+    "kysely": "^0.29.6",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^12.1.3",
+    "@nestjs/core": "^12.1.3",
+    "kysely": "^0.29.6",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "exports": {
+    ".": {
+      "@ftgo/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./infrastructure": {
+      "@ftgo/source": "./src/infrastructure/index.ts",
+      "types": "./dist/infrastructure/index.d.ts",
+      "default": "./dist/infrastructure/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b"
+  }
 }
