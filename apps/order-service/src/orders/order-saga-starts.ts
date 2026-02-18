@@ -19,6 +19,14 @@ export class OrderSagaStarts implements OrderEventTranslation<Promise<void>> {
     await this.sagas.start(this.orderCreation, {
       orderId: order.id.toString(),
       consumerId: order.consumerId.toString(),
+      restaurantId: order.restaurantId.toString(),
+      ticketDetails: {
+        lineItems: order.lineItems.items.map((item) => ({
+          menuItemId: item.menuItemId.toString(),
+          name: item.name.toString(),
+          quantity: item.quantity.value,
+        })),
+      },
       orderTotal: { amount: total.amount, currency: total.currency.toString() },
     });
   }
