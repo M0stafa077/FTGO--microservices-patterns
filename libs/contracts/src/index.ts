@@ -40,3 +40,7 @@ export { TicketCommandPayload } from './kitchen/schemas/ticket-command-payload.s
 export { TicketCommandReplyPayload } from './kitchen/schemas/ticket-command-reply-payload.schema.js';
 export { TicketDetails } from './kitchen/schemas/ticket-details.schema.js';
 export { TicketLineItem } from './kitchen/schemas/ticket-line-item.schema.js';
+export { ACCOUNTING_SERVICE_COMMANDS } from './accounting/accounting.constants.js';
+export { Authorize } from './accounting/authorize.js';
+export { AuthorizePayload } from './accounting/schemas/authorize-payload.schema.js';
+export { AuthorizeReplyPayload } from './accounting/schemas/authorize-reply-payload.schema.js';
