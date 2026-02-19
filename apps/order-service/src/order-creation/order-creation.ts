@@ -1,4 +1,5 @@
 import {
+  Authorize,
   CancelCreateTicket,
   ConfirmCreateTicket,
   CreateTicket,
@@ -26,6 +27,7 @@ export class OrderCreation implements SagaDefinition<typeof OrderCreationData> {
       OrderCreation.rejection(approval),
       OrderCreation.consumerValidation(),
       OrderCreation.ticketCreation(),
+      OrderCreation.authorization(),
       OrderCreation.ticketConfirmation(),
       OrderCreation.approval(approval),
     ];
@@ -62,6 +64,16 @@ export class OrderCreation implements SagaDefinition<typeof OrderCreationData> {
       new ParticipantCommand(CancelCreateTicket, (data: OrderCreationData) =>
         OrderCreation.ticketOf(data),
       ),
+    );
+  }
+
+  private static authorization(): SagaStep<OrderCreationData> {
+    return SagaStep.invoke(
+      new ParticipantCommand(Authorize, (data: OrderCreationData) => ({
+        consumerId: data.consumerId,
+        orderId: data.orderId,
+        orderTotal: data.orderTotal,
+      })),
     );
   }
 
