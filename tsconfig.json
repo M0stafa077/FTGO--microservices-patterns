@@ -24,6 +24,9 @@
     },
     {
       "path": "apps/kitchen-service"
+    },
+    {
+      "path": "apps/accounting-service"
     }
   ]
 }
