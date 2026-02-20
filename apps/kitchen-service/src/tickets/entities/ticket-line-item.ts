@@ -21,4 +21,8 @@ export class TicketLineItem {
     }
     return new TicketLineItem(menuItemId, name, quantity);
   }
+
+  public withQuantity(quantity: Quantity): TicketLineItem {
+    return TicketLineItem.of(this.menuItemId, this.name, quantity);
+  }
 }

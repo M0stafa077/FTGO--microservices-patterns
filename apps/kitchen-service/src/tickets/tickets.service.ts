@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { RestaurantId } from '../restaurants/entities/restaurant-id.js';
 import { Restaurants } from '../restaurants/restaurants.js';
 
+import type { RevisedLineItem } from './entities/revised-line-item.js';
 import type { TicketId } from './entities/ticket-id.js';
 import type { TicketLineItems } from './entities/ticket-line-items.js';
 import { Ticket } from './entities/ticket.entity.js';
@@ -40,17 +41,66 @@ export class TicketsService {
   }
 
   public async confirmCreateTicket(id: TicketId): Promise<void> {
-    await this.transactions.run(async () => {
-      const ticket = await this.tickets.getById(id);
-      ticket.confirmCreate(this.clock.now());
-      await this.tickets.update(ticket);
+    await this.change(id, (ticket, now) => {
+      ticket.confirmCreate(now);
     });
   }
 
   public async cancelCreateTicket(id: TicketId): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.cancelCreate(now);
+    });
+  }
+
+  public async beginCancelTicket(id: TicketId): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.beginCancel(now);
+    });
+  }
+
+  public async undoBeginCancelTicket(id: TicketId): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.undoBeginCancel(now);
+    });
+  }
+
+  public async confirmCancelTicket(id: TicketId): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.confirmCancel(now);
+    });
+  }
+
+  public async beginReviseTicket(
+    id: TicketId,
+    revisions: ReadonlyArray<RevisedLineItem>,
+  ): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.beginRevise(revisions, now);
+    });
+  }
+
+  public async undoBeginReviseTicket(id: TicketId): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.undoBeginRevise(now);
+    });
+  }
+
+  public async confirmReviseTicket(
+    id: TicketId,
+    revisions: ReadonlyArray<RevisedLineItem>,
+  ): Promise<void> {
+    await this.change(id, (ticket, now) => {
+      ticket.confirmRevise(revisions, now);
+    });
+  }
+
+  private async change(
+    id: TicketId,
+    operation: (ticket: Ticket, now: Date) => void,
+  ): Promise<void> {
     await this.transactions.run(async () => {
       const ticket = await this.tickets.getById(id);
-      ticket.cancelCreate(this.clock.now());
+      operation(ticket, this.clock.now());
       await this.tickets.update(ticket);
     });
   }

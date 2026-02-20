@@ -1,8 +1,10 @@
 import { ConcurrentModification } from '@ftgo/common';
 import { PostgresFailure } from '@ftgo/common/infrastructure';
 import { Inject, Injectable } from '@nestjs/common';
+import { sql } from 'kysely';
 
 import { KitchenDatabase } from '../database/kitchen-database.js';
+import type { TicketLineItemsTable } from '../database/tables/ticket-line-items.table.js';
 import type { TicketsTable } from '../database/tables/tickets.table.js';
 
 import type { TicketId } from './entities/ticket-id.js';
@@ -39,10 +41,12 @@ export class PostgresTickets implements Tickets {
   }
 
   public async update(ticket: Ticket): Promise<void> {
-    const row = TicketRecord.from(ticket).ticketRow();
+    const record = TicketRecord.from(ticket);
+    const row = record.ticketRow();
     if ((await this.updateRow(row)) === 0n) {
       throw new ConcurrentModification('Ticket', row.id);
     }
+    await this.updateQuantities(row.id, record.lineItemRows());
   }
 
   private async findRecord(id: TicketId): Promise<TicketRecord | undefined> {
@@ -80,6 +84,26 @@ export class PostgresTickets implements Tickets {
       return result.numUpdatedRows;
     } catch (error) {
       return PostgresFailure.of(error).rethrow('update ticket');
+    }
+  }
+
+  private async updateQuantities(
+    ticketId: string,
+    lineItems: ReadonlyArray<TicketLineItemsTable>,
+  ): Promise<void> {
+    const menuItemIds = lineItems.map((item) => item.menuItemId);
+    const quantities = lineItems.map((item) => item.quantity);
+    try {
+      await sql`
+        update ticket_line_items as item
+        set quantity = revised.quantity
+        from unnest(${menuItemIds}::text[], ${quantities}::integer[]) as revised(menu_item_id, quantity)
+        where item.ticket_id = ${ticketId}
+          and item.menu_item_id = revised.menu_item_id
+          and item.quantity <> revised.quantity
+      `.execute(this.database.current());
+    } catch (error) {
+      PostgresFailure.of(error).rethrow('update ticket line items');
     }
   }
 }
