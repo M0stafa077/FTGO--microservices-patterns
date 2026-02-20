@@ -1,9 +1,7 @@
 import type { MessagingTables } from '@ftgo/messaging/infrastructure';
 
-import type { AccountsTable } from './tables/accounts.table.js';
-import type { AuthorizationsTable } from './tables/authorizations.table.js';
+import type { AccountEventsTable } from './tables/account-events.table.js';
 
 export interface AccountingTables extends MessagingTables {
-  accounts: AccountsTable;
-  authorizations: AuthorizationsTable;
+  accountEvents: AccountEventsTable;
 }

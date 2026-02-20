@@ -7,5 +7,7 @@ export interface Accounts {
   getById(id: AccountId): Promise<Account>;
 
   add(account: Account): Promise<void>;
+
+  save(account: Account): Promise<void>;
 }
 export const Accounts = Symbol('Accounts');

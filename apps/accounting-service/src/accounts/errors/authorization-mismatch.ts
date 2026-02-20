@@ -6,7 +6,7 @@ export class AuthorizationMismatch extends RuleViolation {
   public constructor(orderId: OrderId) {
     super(
       'authorization.mismatch',
-      `Order ${orderId.toString()} is already authorized for another account or amount.`,
+      `Order ${orderId.toString()} is already authorized for another amount.`,
     );
   }
 }

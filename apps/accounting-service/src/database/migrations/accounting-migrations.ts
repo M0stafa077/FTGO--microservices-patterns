@@ -2,6 +2,7 @@ import type { SchemaMigration } from '@ftgo/common/infrastructure';
 import { CreateOutboxMessages, CreateProcessedMessages } from '@ftgo/messaging/infrastructure';
 import type { Migration, MigrationProvider } from 'kysely/migration';
 
+import { CreateAccountEvents } from './create-account-events.js';
 import { CreateAccounts } from './create-accounts.js';
 import { CreateAuthorizations } from './create-authorizations.js';
 
@@ -11,6 +12,7 @@ export class AccountingMigrations implements MigrationProvider {
     ['0002_create_authorizations', new CreateAuthorizations()],
     ['0003_create_outbox_messages', new CreateOutboxMessages()],
     ['0004_create_processed_messages', new CreateProcessedMessages()],
+    ['0005_create_account_events', new CreateAccountEvents()],
   ]);
 
   public async getMigrations(): Promise<Record<string, Migration>> {
