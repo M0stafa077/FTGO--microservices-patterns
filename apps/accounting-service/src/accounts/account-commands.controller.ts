@@ -1,5 +1,11 @@
 import { Currency, Money } from '@ftgo/common';
-import { Authorize, type AuthorizePayload, type AuthorizeReplyPayload } from '@ftgo/contracts';
+import {
+  Authorize,
+  ReverseAuthorization,
+  ReviseAuthorization,
+  type AuthorizationPayload,
+  type AuthorizationReplyPayload,
+} from '@ftgo/contracts';
 import { Reply, type IncomingMessage } from '@ftgo/messaging';
 import { MessageController, OnCommand } from '@ftgo/messaging/infrastructure';
 import { Injectable } from '@nestjs/common';
@@ -15,14 +21,44 @@ export class AccountCommandsController {
 
   @OnCommand(Authorize)
   public async authorize(
-    command: IncomingMessage<AuthorizePayload>,
-  ): Promise<Reply<AuthorizeReplyPayload>> {
+    command: IncomingMessage<AuthorizationPayload>,
+  ): Promise<Reply<AuthorizationReplyPayload>> {
     const { consumerId, orderId, orderTotal } = command.payload;
     await this.accountsService.authorize(
       AccountId.of(consumerId),
       OrderId.of(orderId),
-      Money.of(orderTotal.amount, Currency.of(orderTotal.currency)),
+      this.moneyOf(orderTotal),
     );
     return Reply.success({});
+  }
+
+  @OnCommand(ReverseAuthorization)
+  public async reverseAuthorization(
+    command: IncomingMessage<AuthorizationPayload>,
+  ): Promise<Reply<AuthorizationReplyPayload>> {
+    const { consumerId, orderId, orderTotal } = command.payload;
+    await this.accountsService.reverseAuthorization(
+      AccountId.of(consumerId),
+      OrderId.of(orderId),
+      this.moneyOf(orderTotal),
+    );
+    return Reply.success({});
+  }
+
+  @OnCommand(ReviseAuthorization)
+  public async reviseAuthorization(
+    command: IncomingMessage<AuthorizationPayload>,
+  ): Promise<Reply<AuthorizationReplyPayload>> {
+    const { consumerId, orderId, orderTotal } = command.payload;
+    await this.accountsService.reviseAuthorization(
+      AccountId.of(consumerId),
+      OrderId.of(orderId),
+      this.moneyOf(orderTotal),
+    );
+    return Reply.success({});
+  }
+
+  private moneyOf(total: AuthorizationPayload['orderTotal']): Money {
+    return Money.of(total.amount, Currency.of(total.currency));
   }
 }

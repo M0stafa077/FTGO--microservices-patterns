@@ -24,9 +24,38 @@ export class AccountsService {
   }
 
   public async authorize(accountId: AccountId, orderId: OrderId, amount: Money): Promise<void> {
+    await this.change(accountId, (account, now) => {
+      account.authorize(orderId, amount, now);
+    });
+  }
+
+  public async reverseAuthorization(
+    accountId: AccountId,
+    orderId: OrderId,
+    amount: Money,
+  ): Promise<void> {
+    await this.change(accountId, (account, now) => {
+      account.reverseAuthorization(orderId, amount, now);
+    });
+  }
+
+  public async reviseAuthorization(
+    accountId: AccountId,
+    orderId: OrderId,
+    amount: Money,
+  ): Promise<void> {
+    await this.change(accountId, (account, now) => {
+      account.reviseAuthorization(orderId, amount, now);
+    });
+  }
+
+  private async change(
+    accountId: AccountId,
+    operation: (account: Account, now: Date) => void,
+  ): Promise<void> {
     await this.transactions.run(async () => {
       const account = await this.accounts.getById(accountId);
-      account.authorize(orderId, amount, this.clock.now());
+      operation(account, this.clock.now());
       await this.accounts.save(account);
     });
   }

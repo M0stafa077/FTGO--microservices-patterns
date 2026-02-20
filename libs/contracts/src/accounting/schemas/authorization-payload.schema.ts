@@ -2,7 +2,7 @@ import { Type, type Static } from 'typebox';
 
 import { Money } from '../../schemas/money.schema.js';
 
-export const AuthorizePayload = Type.Object(
+export const AuthorizationPayload = Type.Object(
   {
     consumerId: Type.String({ format: 'uuid' }),
     orderId: Type.String({ format: 'uuid' }),
@@ -10,4 +10,4 @@ export const AuthorizePayload = Type.Object(
   },
   { additionalProperties: false },
 );
-export type AuthorizePayload = Static<typeof AuthorizePayload>;
+export type AuthorizationPayload = Static<typeof AuthorizationPayload>;
