@@ -49,6 +49,42 @@ export class OrdersService {
   }
 
   public async getOrder(id: OrderId, reader: ConsumerId, readerRole: Role): Promise<Order> {
+    return this.visibleOrder(id, reader, readerRole);
+  }
+
+  public async cancelOrder(id: OrderId, caller: ConsumerId, callerRole: Role): Promise<Order> {
+    return this.change(id, caller, callerRole, (order, now) => {
+      order.cancel(now);
+    });
+  }
+
+  public async reviseOrder(
+    id: OrderId,
+    caller: ConsumerId,
+    callerRole: Role,
+    revisions: ReadonlyArray<RequestedLineItem>,
+  ): Promise<Order> {
+    return this.change(id, caller, callerRole, (order, now) => {
+      order.revise(revisions, now);
+    });
+  }
+
+  private async change(
+    id: OrderId,
+    caller: ConsumerId,
+    callerRole: Role,
+    operation: (order: Order, now: Date) => void,
+  ): Promise<Order> {
+    return this.transactions.run(async () => {
+      const order = await this.visibleOrder(id, caller, callerRole);
+      operation(order, this.clock.now());
+      await this.orders.update(order);
+      await this.orderEvents.appendEventsOf(order);
+      return order;
+    });
+  }
+
+  private async visibleOrder(id: OrderId, reader: ConsumerId, readerRole: Role): Promise<Order> {
     const order = await this.orders.findById(id);
     if (order === undefined || (readerRole !== Role.Admin && !order.isPlacedBy(reader))) {
       throw new OrderNotFound(id);

@@ -27,6 +27,10 @@ export class OrderLineItem {
     return new OrderLineItem(menuItemId, name, price, quantity);
   }
 
+  public withQuantity(quantity: Quantity): OrderLineItem {
+    return OrderLineItem.of(this.menuItemId, this.name, this.price, quantity);
+  }
+
   public total(): Money {
     return this.price.multiply(this.quantity);
   }

@@ -3,6 +3,7 @@ import { CreateOutboxMessages, CreateProcessedMessages } from '@ftgo/messaging/i
 import { CreateSagaInstances } from '@ftgo/saga/infrastructure';
 import type { Migration, MigrationProvider } from 'kysely/migration';
 
+import { AllowCancelAndRevisionStates } from './allow-cancel-and-revision-states.js';
 import { AllowDecidedOrderStates } from './allow-decided-order-states.js';
 import { CreateOrderLineItems } from './create-order-line-items.js';
 import { CreateOrders } from './create-orders.js';
@@ -19,6 +20,7 @@ export class OrderMigrations implements MigrationProvider {
     ['0006_create_processed_messages', new CreateProcessedMessages()],
     ['0007_allow_decided_order_states', new AllowDecidedOrderStates()],
     ['0008_create_saga_instances', new CreateSagaInstances()],
+    ['0009_allow_cancel_and_revision_states', new AllowCancelAndRevisionStates()],
   ]);
 
   public async getMigrations(): Promise<Record<string, Migration>> {

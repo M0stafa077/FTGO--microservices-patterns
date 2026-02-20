@@ -10,12 +10,15 @@ import { UnknownMenuItem } from '../errors/unknown-menu-item.js';
 import type { ConsumerId } from './consumer-id.js';
 import type { DeliveryInformation } from './delivery-information.js';
 import { OrderApproved } from './order-approved.js';
+import { OrderCancellationRequested } from './order-cancellation-requested.js';
+import { OrderCancelled } from './order-cancelled.js';
 import type { OrderEvent } from './order-event.js';
 import { OrderId } from './order-id.js';
 import { OrderLineItem } from './order-line-item.js';
 import { OrderLineItems } from './order-line-items.js';
 import { OrderPlaced } from './order-placed.js';
 import { OrderRejected } from './order-rejected.js';
+import { OrderRevisionProposed } from './order-revision-proposed.js';
 import type { OrderSnapshot } from './order-snapshot.js';
 import { OrderState } from './order-state.js';
 import type { RequestedLineItem } from './requested-line-item.js';
@@ -25,12 +28,12 @@ export class Order {
   public readonly consumerId: ConsumerId;
   public readonly restaurantId: RestaurantId;
   public readonly restaurantName: RestaurantName;
-  public readonly lineItems: OrderLineItems;
   public readonly deliveryInformation: DeliveryInformation;
   public readonly createdAt: Date;
   public readonly version: number;
   private currentState: OrderState;
   private lastUpdatedAt: Date;
+  private currentLineItems: OrderLineItems;
   private readonly pendingEvents: OrderEvent[] = [];
 
   private constructor(snapshot: OrderSnapshot) {
@@ -38,7 +41,7 @@ export class Order {
     this.consumerId = snapshot.consumerId;
     this.restaurantId = snapshot.restaurantId;
     this.restaurantName = snapshot.restaurantName;
-    this.lineItems = snapshot.lineItems;
+    this.currentLineItems = snapshot.lineItems;
     this.deliveryInformation = snapshot.deliveryInformation;
     this.createdAt = snapshot.createdAt;
     this.version = snapshot.version;
@@ -48,6 +51,10 @@ export class Order {
 
   public get state(): OrderState {
     return this.currentState;
+  }
+
+  public get lineItems(): OrderLineItems {
+    return this.currentLineItems;
   }
 
   public get updatedAt(): Date {
@@ -97,13 +104,43 @@ export class Order {
   }
 
   public approve(now: Date): void {
-    this.leaveApprovalPending(OrderState.Approved, now);
+    this.move(OrderState.ApprovalPending, OrderState.Approved, now);
     this.pendingEvents.push(new OrderApproved(this.id));
   }
 
   public reject(now: Date): void {
-    this.leaveApprovalPending(OrderState.Rejected, now);
+    this.move(OrderState.ApprovalPending, OrderState.Rejected, now);
     this.pendingEvents.push(new OrderRejected(this.id));
+  }
+
+  public cancel(now: Date): void {
+    this.move(OrderState.Approved, OrderState.CancelPending, now);
+    this.pendingEvents.push(new OrderCancellationRequested(this));
+  }
+
+  public undoCancel(now: Date): void {
+    this.move(OrderState.CancelPending, OrderState.Approved, now);
+  }
+
+  public confirmCancel(now: Date): void {
+    this.move(OrderState.CancelPending, OrderState.Cancelled, now);
+    this.pendingEvents.push(new OrderCancelled(this.id));
+  }
+
+  public revise(revisions: ReadonlyArray<RequestedLineItem>, now: Date): void {
+    const revised = this.currentLineItems.revisedWith(revisions);
+    this.move(OrderState.Approved, OrderState.RevisionPending, now);
+    this.pendingEvents.push(new OrderRevisionProposed(this, revisions, revised.total()));
+  }
+
+  public undoRevision(now: Date): void {
+    this.move(OrderState.RevisionPending, OrderState.Approved, now);
+  }
+
+  public confirmRevision(revisions: ReadonlyArray<RequestedLineItem>, now: Date): void {
+    const revised = this.currentLineItems.revisedWith(revisions);
+    this.move(OrderState.RevisionPending, OrderState.Approved, now);
+    this.currentLineItems = revised;
   }
 
   public isPlacedBy(consumerId: ConsumerId): boolean {
@@ -114,8 +151,8 @@ export class Order {
     return this.pendingEvents.splice(0);
   }
 
-  private leaveApprovalPending(target: OrderState, now: Date): void {
-    if (this.currentState !== OrderState.ApprovalPending) {
+  private move(source: OrderState, target: OrderState, now: Date): void {
+    if (this.currentState !== source) {
       throw new IllegalStateTransition(this.id, this.currentState, target);
     }
     this.currentState = target;

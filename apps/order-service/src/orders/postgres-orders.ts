@@ -1,8 +1,10 @@
 import { ConcurrentModification } from '@ftgo/common';
 import { PostgresFailure } from '@ftgo/common/infrastructure';
 import { Inject, Injectable } from '@nestjs/common';
+import { sql } from 'kysely';
 
 import { OrderDatabase } from '../database/order-database.js';
+import type { OrderLineItemsTable } from '../database/tables/order-line-items.table.js';
 import type { OrdersTable } from '../database/tables/orders.table.js';
 
 import type { OrderId } from './entities/order-id.js';
@@ -39,10 +41,12 @@ export class PostgresOrders implements Orders {
   }
 
   public async update(order: Order): Promise<void> {
-    const row = OrderRecord.from(order).orderRow();
+    const record = OrderRecord.from(order);
+    const row = record.orderRow();
     if ((await this.updateRow(row)) === 0n) {
       throw new ConcurrentModification('Order', row.id);
     }
+    await this.updateQuantities(row.id, record.lineItemRows());
   }
 
   private async findRecord(id: OrderId): Promise<OrderRecord | undefined> {
@@ -80,6 +84,26 @@ export class PostgresOrders implements Orders {
       return result.numUpdatedRows;
     } catch (error) {
       return PostgresFailure.of(error).rethrow('update order');
+    }
+  }
+
+  private async updateQuantities(
+    orderId: string,
+    lineItems: ReadonlyArray<OrderLineItemsTable>,
+  ): Promise<void> {
+    const menuItemIds = lineItems.map((item) => item.menuItemId);
+    const quantities = lineItems.map((item) => item.quantity);
+    try {
+      await sql`
+        update order_line_items as item
+        set quantity = revised.quantity
+        from unnest(${menuItemIds}::text[], ${quantities}::integer[]) as revised(menu_item_id, quantity)
+        where item.order_id = ${orderId}
+          and item.menu_item_id = revised.menu_item_id
+          and item.quantity <> revised.quantity
+      `.execute(this.database.current());
+    } catch (error) {
+      PostgresFailure.of(error).rethrow('update order line items');
     }
   }
 }

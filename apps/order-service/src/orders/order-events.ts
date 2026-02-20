@@ -15,7 +15,9 @@ export class OrderEvents {
 
   public async appendEventsOf(order: Order): Promise<void> {
     for (const event of order.releaseEvents()) {
-      await this.outbox.append(this.messages.of(event));
+      for (const message of this.messages.of(event)) {
+        await this.outbox.append(message);
+      }
       await event.translate(this.sagaStarts);
     }
   }

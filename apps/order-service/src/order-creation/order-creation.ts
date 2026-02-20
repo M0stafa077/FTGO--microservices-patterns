@@ -10,7 +10,7 @@ import { LocalAction, ParticipantCommand, SagaStep, type SagaDefinition } from '
 import { Injectable } from '@nestjs/common';
 
 import { OrderId } from '../orders/entities/order-id.js';
-import { OrderApproval } from '../orders/order-approval.js';
+import { OrderTransitions } from '../orders/order-transitions.js';
 
 import { MissingTicket } from './errors/missing-ticket.js';
 import { CREATE_ORDER_SAGA } from './order-creation.constants.js';
@@ -22,20 +22,22 @@ export class OrderCreation implements SagaDefinition<typeof OrderCreationData> {
   public readonly data = OrderCreationData;
   public readonly steps: ReadonlyArray<SagaStep<OrderCreationData>>;
 
-  public constructor(approval: OrderApproval) {
+  public constructor(transitions: OrderTransitions) {
     this.steps = [
-      OrderCreation.rejection(approval),
+      OrderCreation.rejection(transitions),
       OrderCreation.consumerValidation(),
       OrderCreation.ticketCreation(),
       OrderCreation.authorization(),
       OrderCreation.ticketConfirmation(),
-      OrderCreation.approval(approval),
+      OrderCreation.approval(transitions),
     ];
   }
 
-  private static rejection(approval: OrderApproval): SagaStep<OrderCreationData> {
+  private static rejection(transitions: OrderTransitions): SagaStep<OrderCreationData> {
     return SagaStep.compensateWith(
-      new LocalAction<OrderCreationData>(async (data) => approval.reject(OrderId.of(data.orderId))),
+      new LocalAction<OrderCreationData>(async (data) =>
+        transitions.reject(OrderId.of(data.orderId)),
+      ),
     );
   }
 
@@ -85,10 +87,10 @@ export class OrderCreation implements SagaDefinition<typeof OrderCreationData> {
     ).retriable();
   }
 
-  private static approval(approval: OrderApproval): SagaStep<OrderCreationData> {
+  private static approval(transitions: OrderTransitions): SagaStep<OrderCreationData> {
     return SagaStep.invoke(
       new LocalAction<OrderCreationData>(async (data) =>
-        approval.approve(OrderId.of(data.orderId)),
+        transitions.approve(OrderId.of(data.orderId)),
       ),
     );
   }

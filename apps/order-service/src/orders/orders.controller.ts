@@ -12,8 +12,10 @@ import { DeliveryInformation } from './entities/delivery-information.js';
 import { OrderId } from './entities/order-id.js';
 import { RequestedLineItem } from './entities/requested-line-item.js';
 import { OrdersService } from './orders.service.js';
+import type { LineItemRequest } from './schemas/line-item-request.schema.js';
 import { OrderIdParameter } from './schemas/order-id-parameter.schema.js';
 import { PlaceOrderRequest } from './schemas/place-order-request.schema.js';
+import { ReviseOrderRequest } from './schemas/revise-order-request.schema.js';
 
 @Controller('orders')
 export class OrdersController {
@@ -29,9 +31,7 @@ export class OrdersController {
     const order = await this.ordersService.placeOrder(
       ConsumerId.of(caller.accountId.toString()),
       RestaurantId.of(body.restaurantId),
-      body.lineItems.map(
-        (item) => new RequestedLineItem(MenuItemId.of(item.menuItemId), Quantity.of(item.quantity)),
-      ),
+      this.requestedLineItemsOf(body.lineItems),
       DeliveryInformation.of(Address.of(body.deliveryAddress), new Date(body.deliveryTime)),
     );
     response.location(`/orders/${order.id.toString()}`);
@@ -49,6 +49,46 @@ export class OrdersController {
         ConsumerId.of(caller.accountId.toString()),
         caller.role,
       ),
+    );
+  }
+
+  @Post(':orderId/cancel')
+  @HttpCode(HttpStatus.OK)
+  public async cancel(
+    @CurrentCaller() caller: Caller,
+    @Param('orderId', new SchemaValidationPipe(OrderIdParameter)) orderId: string,
+  ): Promise<OrderResponse> {
+    return new OrderResponse(
+      await this.ordersService.cancelOrder(
+        OrderId.of(orderId),
+        ConsumerId.of(caller.accountId.toString()),
+        caller.role,
+      ),
+    );
+  }
+
+  @Post(':orderId/revise')
+  @HttpCode(HttpStatus.OK)
+  public async revise(
+    @CurrentCaller() caller: Caller,
+    @Param('orderId', new SchemaValidationPipe(OrderIdParameter)) orderId: string,
+    @Body(new SchemaValidationPipe(ReviseOrderRequest)) body: ReviseOrderRequest,
+  ): Promise<OrderResponse> {
+    return new OrderResponse(
+      await this.ordersService.reviseOrder(
+        OrderId.of(orderId),
+        ConsumerId.of(caller.accountId.toString()),
+        caller.role,
+        this.requestedLineItemsOf(body.lineItems),
+      ),
+    );
+  }
+
+  private requestedLineItemsOf(
+    lineItems: ReadonlyArray<LineItemRequest>,
+  ): ReadonlyArray<RequestedLineItem> {
+    return lineItems.map(
+      (item) => new RequestedLineItem(MenuItemId.of(item.menuItemId), Quantity.of(item.quantity)),
     );
   }
 }
