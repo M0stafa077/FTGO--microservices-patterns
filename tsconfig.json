@@ -27,6 +27,9 @@
     },
     {
       "path": "apps/accounting-service"
+    },
+    {
+      "path": "apps/delivery-service"
     }
   ]
 }
