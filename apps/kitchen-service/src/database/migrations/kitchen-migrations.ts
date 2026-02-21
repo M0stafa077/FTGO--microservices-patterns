@@ -2,6 +2,7 @@ import type { SchemaMigration } from '@ftgo/common/infrastructure';
 import { CreateOutboxMessages, CreateProcessedMessages } from '@ftgo/messaging/infrastructure';
 import type { Migration, MigrationProvider } from 'kysely/migration';
 
+import { AcceptTickets } from './accept-tickets.js';
 import { AllowCancelAndRevisionStates } from './allow-cancel-and-revision-states.js';
 import { CreateRestaurantMenuItems } from './create-restaurant-menu-items.js';
 import { CreateRestaurants } from './create-restaurants.js';
@@ -17,6 +18,7 @@ export class KitchenMigrations implements MigrationProvider {
     ['0005_create_outbox_messages', new CreateOutboxMessages()],
     ['0006_create_processed_messages', new CreateProcessedMessages()],
     ['0007_allow_cancel_and_revision_states', new AllowCancelAndRevisionStates()],
+    ['0008_accept_tickets', new AcceptTickets()],
   ]);
 
   public async getMigrations(): Promise<Record<string, Migration>> {

@@ -9,6 +9,9 @@ export interface TicketSnapshot {
   readonly restaurantId: RestaurantId;
   readonly lineItems: TicketLineItems;
   readonly state: TicketState;
+  readonly previousState: TicketState | undefined;
+  readonly readyBy: Date | undefined;
+  readonly acceptedAt: Date | undefined;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly version: number;

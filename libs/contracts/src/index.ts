@@ -32,7 +32,11 @@ export { OrderCancelled } from './order/order-cancelled.js';
 export { OrderAuthorizedPayload } from './order/schemas/order-authorized-payload.schema.js';
 export { OrderRejectedPayload } from './order/schemas/order-rejected-payload.schema.js';
 export { OrderCancelledPayload } from './order/schemas/order-cancelled-payload.schema.js';
-export { KITCHEN_SERVICE_COMMANDS } from './kitchen/kitchen.constants.js';
+export {
+  KITCHEN_SERVICE_COMMANDS,
+  TICKET_AGGREGATE,
+  TICKET_EVENTS,
+} from './kitchen/kitchen.constants.js';
 export { CreateTicket } from './kitchen/create-ticket.js';
 export { ConfirmCreateTicket } from './kitchen/confirm-create-ticket.js';
 export { CancelCreateTicket } from './kitchen/cancel-create-ticket.js';
@@ -50,6 +54,8 @@ export { TicketDetails } from './kitchen/schemas/ticket-details.schema.js';
 export { TicketLineItem } from './kitchen/schemas/ticket-line-item.schema.js';
 export { TicketRevisionPayload } from './kitchen/schemas/ticket-revision-payload.schema.js';
 export { RevisedLineItem } from './kitchen/schemas/revised-line-item.schema.js';
+export { TicketAccepted } from './kitchen/ticket-accepted.js';
+export { TicketAcceptedPayload } from './kitchen/schemas/ticket-accepted-payload.schema.js';
 export { ACCOUNTING_SERVICE_COMMANDS } from './accounting/accounting.constants.js';
 export { Authorize } from './accounting/authorize.js';
 export { ReverseAuthorization } from './accounting/reverse-authorization.js';

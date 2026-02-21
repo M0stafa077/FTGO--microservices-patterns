@@ -33,6 +33,9 @@ export class TicketRecord {
         id: ticketId,
         restaurantId: ticket.restaurantId.toString(),
         state: ticket.state,
+        previousState: ticket.previousState ?? null,
+        readyBy: ticket.readyBy ?? null,
+        acceptedAt: ticket.acceptedAt ?? null,
         createdAt: ticket.createdAt,
         updatedAt: ticket.updatedAt,
         version: ticket.version,
@@ -52,7 +55,11 @@ export class TicketRecord {
       id: TicketId.of(this.row.id),
       restaurantId: RestaurantId.of(this.row.restaurantId),
       lineItems: TicketLineItems.of(this.lineItems.map((item) => this.toLineItem(item))),
-      state: this.state(),
+      state: this.stateOf(this.row.state),
+      previousState:
+        this.row.previousState === null ? undefined : this.stateOf(this.row.previousState),
+      readyBy: this.row.readyBy ?? undefined,
+      acceptedAt: this.row.acceptedAt ?? undefined,
       createdAt: this.row.createdAt,
       updatedAt: this.row.updatedAt,
       version: this.row.version,
@@ -75,10 +82,10 @@ export class TicketRecord {
     );
   }
 
-  private state(): TicketState {
-    const state = TICKET_STATES.get(this.row.state);
+  private stateOf(value: string): TicketState {
+    const state = TICKET_STATES.get(value);
     if (state === undefined) {
-      throw new InvalidInput('ticket.unknown_state', `Unknown ticket state "${this.row.state}".`);
+      throw new InvalidInput('ticket.unknown_state', `Unknown ticket state "${value}".`);
     }
     return state;
   }

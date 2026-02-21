@@ -9,6 +9,7 @@ import type { TicketId } from './entities/ticket-id.js';
 import type { TicketLineItems } from './entities/ticket-line-items.js';
 import { Ticket } from './entities/ticket.entity.js';
 import { UnknownRestaurant } from './errors/unknown-restaurant.js';
+import { TicketEvents } from './ticket-events.js';
 import { Tickets } from './tickets.js';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class TicketsService {
     @Inject(Restaurants) private readonly restaurants: Restaurants,
     @Inject(Transactions) private readonly transactions: Transactions,
     @Inject(Clock) private readonly clock: Clock,
+    private readonly ticketEvents: TicketEvents,
   ) {}
 
   public async createTicket(
@@ -49,6 +51,12 @@ export class TicketsService {
   public async cancelCreateTicket(id: TicketId): Promise<void> {
     await this.change(id, (ticket, now) => {
       ticket.cancelCreate(now);
+    });
+  }
+
+  public async acceptTicket(id: TicketId, readyBy: Date): Promise<Ticket> {
+    return this.change(id, (ticket, now) => {
+      ticket.accept(readyBy, now);
     });
   }
 
@@ -97,11 +105,13 @@ export class TicketsService {
   private async change(
     id: TicketId,
     operation: (ticket: Ticket, now: Date) => void,
-  ): Promise<void> {
-    await this.transactions.run(async () => {
+  ): Promise<Ticket> {
+    return this.transactions.run(async () => {
       const ticket = await this.tickets.getById(id);
       operation(ticket, this.clock.now());
       await this.tickets.update(ticket);
+      await this.ticketEvents.appendEventsOf(ticket);
+      return ticket;
     });
   }
 }

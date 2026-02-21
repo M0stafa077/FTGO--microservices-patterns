@@ -1,4 +1,9 @@
-import { ClockModule, LoggingModule, ProblemDetailsFilter } from '@ftgo/common/infrastructure';
+import {
+  AccessModule,
+  ClockModule,
+  LoggingModule,
+  ProblemDetailsFilter,
+} from '@ftgo/common/infrastructure';
 import { MessagingModule } from '@ftgo/messaging/infrastructure';
 import { Module, type DynamicModule } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
@@ -18,6 +23,7 @@ export class AppModule {
       imports: [
         LoggingModule.with({ level: config.logLevel }),
         ClockModule,
+        AccessModule.with(config.access),
         DatabaseModule.with(config.database),
         MessagingModule.with({ serviceName: SERVICE_NAME, config: config.messaging }),
         RestaurantsModule,

@@ -77,7 +77,14 @@ export class PostgresTickets implements Tickets {
       const result = await this.database
         .current()
         .updateTable('tickets')
-        .set({ state: row.state, updatedAt: row.updatedAt, version: row.version + 1 })
+        .set({
+          state: row.state,
+          previousState: row.previousState,
+          readyBy: row.readyBy,
+          acceptedAt: row.acceptedAt,
+          updatedAt: row.updatedAt,
+          version: row.version + 1,
+        })
         .where('id', '=', row.id)
         .where('version', '=', row.version)
         .executeTakeFirst();
