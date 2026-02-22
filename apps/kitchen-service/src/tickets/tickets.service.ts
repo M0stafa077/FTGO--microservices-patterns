@@ -1,13 +1,15 @@
-import { Clock, Transactions } from '@ftgo/common';
+import { Clock, Role, Transactions } from '@ftgo/common';
 import { Inject, Injectable } from '@nestjs/common';
 
 import type { RestaurantId } from '../restaurants/entities/restaurant-id.js';
 import { Restaurants } from '../restaurants/restaurants.js';
 
+import type { ConsumerId } from './entities/consumer-id.js';
 import type { RevisedLineItem } from './entities/revised-line-item.js';
 import type { TicketId } from './entities/ticket-id.js';
 import type { TicketLineItems } from './entities/ticket-line-items.js';
 import { Ticket } from './entities/ticket.entity.js';
+import { TicketNotFound } from './errors/ticket-not-found.js';
 import { UnknownRestaurant } from './errors/unknown-restaurant.js';
 import { TicketEvents } from './ticket-events.js';
 import { Tickets } from './tickets.js';
@@ -24,6 +26,7 @@ export class TicketsService {
 
   public async createTicket(
     id: TicketId,
+    consumerId: ConsumerId,
     restaurantId: RestaurantId,
     lineItems: TicketLineItems,
   ): Promise<Ticket> {
@@ -36,10 +39,18 @@ export class TicketsService {
       if (restaurant === undefined) {
         throw new UnknownRestaurant(restaurantId);
       }
-      const ticket = Ticket.create(id, restaurant, lineItems, this.clock.now());
+      const ticket = Ticket.create(id, consumerId, restaurant, lineItems, this.clock.now());
       await this.tickets.add(ticket);
       return ticket;
     });
+  }
+
+  public async getTicket(id: TicketId, reader: ConsumerId, readerRole: Role): Promise<Ticket> {
+    const ticket = await this.tickets.findById(id);
+    if (ticket === undefined || (readerRole !== Role.Admin && !ticket.isFor(reader))) {
+      throw new TicketNotFound(id);
+    }
+    return ticket;
   }
 
   public async confirmCreateTicket(id: TicketId): Promise<void> {

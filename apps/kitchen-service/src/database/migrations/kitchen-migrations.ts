@@ -8,6 +8,7 @@ import { CreateRestaurantMenuItems } from './create-restaurant-menu-items.js';
 import { CreateRestaurants } from './create-restaurants.js';
 import { CreateTicketLineItems } from './create-ticket-line-items.js';
 import { CreateTickets } from './create-tickets.js';
+import { RecordTicketConsumers } from './record-ticket-consumers.js';
 
 export class KitchenMigrations implements MigrationProvider {
   private readonly migrations: ReadonlyMap<string, SchemaMigration> = new Map([
@@ -19,6 +20,7 @@ export class KitchenMigrations implements MigrationProvider {
     ['0006_create_processed_messages', new CreateProcessedMessages()],
     ['0007_allow_cancel_and_revision_states', new AllowCancelAndRevisionStates()],
     ['0008_accept_tickets', new AcceptTickets()],
+    ['0009_record_ticket_consumers', new RecordTicketConsumers()],
   ]);
 
   public async getMigrations(): Promise<Record<string, Migration>> {

@@ -5,6 +5,7 @@ import type { TicketsTable } from '../database/tables/tickets.table.js';
 import { MenuItemId } from '../restaurants/entities/menu-item-id.js';
 import { RestaurantId } from '../restaurants/entities/restaurant-id.js';
 
+import { ConsumerId } from './entities/consumer-id.js';
 import { MenuItemName } from './entities/menu-item-name.js';
 import { TicketId } from './entities/ticket-id.js';
 import { TicketLineItem } from './entities/ticket-line-item.js';
@@ -32,6 +33,7 @@ export class TicketRecord {
       {
         id: ticketId,
         restaurantId: ticket.restaurantId.toString(),
+        consumerId: ticket.consumerId?.toString() ?? null,
         state: ticket.state,
         previousState: ticket.previousState ?? null,
         readyBy: ticket.readyBy ?? null,
@@ -54,6 +56,7 @@ export class TicketRecord {
     return Ticket.restore({
       id: TicketId.of(this.row.id),
       restaurantId: RestaurantId.of(this.row.restaurantId),
+      consumerId: this.row.consumerId === null ? undefined : ConsumerId.of(this.row.consumerId),
       lineItems: TicketLineItems.of(this.lineItems.map((item) => this.toLineItem(item))),
       state: this.stateOf(this.row.state),
       previousState:

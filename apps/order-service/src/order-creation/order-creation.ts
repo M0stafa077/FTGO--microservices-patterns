@@ -57,6 +57,7 @@ export class OrderCreation implements SagaDefinition<typeof OrderCreationData> {
         CreateTicket,
         (data: OrderCreationData) => ({
           orderId: data.orderId,
+          consumerId: data.consumerId,
           restaurantId: data.restaurantId,
           ticketDetails: data.ticketDetails,
         }),

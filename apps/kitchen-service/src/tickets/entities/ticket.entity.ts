@@ -4,6 +4,7 @@ import { IllegalStateTransition } from '../errors/illegal-state-transition.js';
 import { ReadyByNotInFuture } from '../errors/ready-by-not-in-future.js';
 import { LOCKABLE_TICKET_STATES } from '../tickets.constants.js';
 
+import type { ConsumerId } from './consumer-id.js';
 import type { RevisedLineItem } from './revised-line-item.js';
 import { TicketAccepted } from './ticket-accepted.js';
 import type { TicketId } from './ticket-id.js';
@@ -14,6 +15,7 @@ import { TicketState } from './ticket-state.js';
 export class Ticket {
   public readonly id: TicketId;
   public readonly restaurantId: RestaurantId;
+  public readonly consumerId: ConsumerId | undefined;
   public readonly createdAt: Date;
   public readonly version: number;
   private currentState: TicketState;
@@ -27,6 +29,7 @@ export class Ticket {
   private constructor(snapshot: TicketSnapshot) {
     this.id = snapshot.id;
     this.restaurantId = snapshot.restaurantId;
+    this.consumerId = snapshot.consumerId;
     this.currentLineItems = snapshot.lineItems;
     this.createdAt = snapshot.createdAt;
     this.version = snapshot.version;
@@ -63,6 +66,7 @@ export class Ticket {
 
   public static create(
     id: TicketId,
+    consumerId: ConsumerId,
     restaurant: Restaurant,
     lineItems: TicketLineItems,
     now: Date,
@@ -71,6 +75,7 @@ export class Ticket {
     return new Ticket({
       id,
       restaurantId: restaurant.id,
+      consumerId,
       lineItems,
       state: TicketState.CreatePending,
       previousState: undefined,
@@ -140,6 +145,10 @@ export class Ticket {
     const revised = this.currentLineItems.revisedWith(revisions);
     this.unlock(TicketState.RevisionPending, now);
     this.currentLineItems = revised;
+  }
+
+  public isFor(consumerId: ConsumerId): boolean {
+    return this.consumerId?.equals(consumerId) === true;
   }
 
   public releaseEvents(): ReadonlyArray<TicketAccepted> {

@@ -23,6 +23,7 @@ import { Injectable } from '@nestjs/common';
 import { MenuItemId } from '../restaurants/entities/menu-item-id.js';
 import { RestaurantId } from '../restaurants/entities/restaurant-id.js';
 
+import { ConsumerId } from './entities/consumer-id.js';
 import { MenuItemName } from './entities/menu-item-name.js';
 import { RevisedLineItem } from './entities/revised-line-item.js';
 import { TicketId } from './entities/ticket-id.js';
@@ -39,9 +40,10 @@ export class TicketCommandsController {
   public async createTicket(
     command: IncomingMessage<CreateTicketPayload>,
   ): Promise<Reply<CreateTicketReplyPayload>> {
-    const { orderId, restaurantId, ticketDetails } = command.payload;
+    const { orderId, consumerId, restaurantId, ticketDetails } = command.payload;
     const ticket = await this.ticketsService.createTicket(
       TicketId.of(orderId),
+      ConsumerId.of(consumerId),
       RestaurantId.of(restaurantId),
       this.lineItemsOf(ticketDetails),
     );

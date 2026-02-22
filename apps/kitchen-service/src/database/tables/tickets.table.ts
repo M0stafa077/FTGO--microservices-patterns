@@ -1,6 +1,7 @@
 export interface TicketsTable {
   id: string;
   restaurantId: string;
+  consumerId: string | null;
   state: string;
   previousState: string | null;
   readyBy: Date | null;
