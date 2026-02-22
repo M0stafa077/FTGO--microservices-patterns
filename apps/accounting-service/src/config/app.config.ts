@@ -1,4 +1,4 @@
-import { Environment } from '@ftgo/common/infrastructure';
+import { AccessConfig, Environment } from '@ftgo/common/infrastructure';
 import { MessagingConfig } from '@ftgo/messaging/infrastructure';
 import type { Level } from 'pino';
 
@@ -10,6 +10,7 @@ export class AppConfig {
     public readonly port: number,
     public readonly logLevel: Level,
     public readonly database: DatabaseConfig,
+    public readonly access: AccessConfig,
     public readonly messaging: MessagingConfig,
   ) {}
 
@@ -19,6 +20,7 @@ export class AppConfig {
       variables.ACCOUNTING_SERVICE_PORT,
       variables.LOG_LEVEL,
       DatabaseConfig.fromEnvironment(environment),
+      AccessConfig.fromEnvironment(environment),
       MessagingConfig.fromEnvironment(environment),
     );
   }

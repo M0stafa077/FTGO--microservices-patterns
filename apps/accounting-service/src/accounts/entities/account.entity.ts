@@ -6,6 +6,7 @@ import type { AccountId } from './account-id.js';
 import { AuthorizationLedger } from './authorization-ledger.js';
 import { AuthorizationReversed } from './authorization-reversed.js';
 import { AuthorizationRevised } from './authorization-revised.js';
+import type { Authorization } from './authorization.js';
 import type { OrderId } from './order-id.js';
 
 export class Account {
@@ -60,6 +61,10 @@ export class Account {
       return;
     }
     this.record(new AuthorizationRevised(orderId, amount, now));
+  }
+
+  public authorizationFor(orderId: OrderId): Authorization {
+    return this.ledger.get(orderId);
   }
 
   public releaseEvents(): ReadonlyArray<AccountEvent> {

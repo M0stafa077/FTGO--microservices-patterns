@@ -1,10 +1,12 @@
-import { Clock, Transactions, type Money } from '@ftgo/common';
+import { Clock, Role, Transactions, type Money } from '@ftgo/common';
 import { Inject, Injectable } from '@nestjs/common';
 
 import { Accounts } from './accounts.js';
 import type { AccountId } from './entities/account-id.js';
 import { Account } from './entities/account.entity.js';
+import type { Authorization } from './entities/authorization.js';
 import type { OrderId } from './entities/order-id.js';
+import { AccountNotFound } from './errors/account-not-found.js';
 
 @Injectable()
 export class AccountsService {
@@ -47,6 +49,19 @@ export class AccountsService {
     await this.change(accountId, (account, now) => {
       account.reviseAuthorization(orderId, amount, now);
     });
+  }
+
+  public async getAuthorization(
+    accountId: AccountId,
+    orderId: OrderId,
+    reader: AccountId,
+    readerRole: Role,
+  ): Promise<Authorization> {
+    const account = await this.accounts.findById(accountId);
+    if (account === undefined || (readerRole !== Role.Admin && !accountId.equals(reader))) {
+      throw new AccountNotFound(accountId);
+    }
+    return account.authorizationFor(orderId);
   }
 
   private async change(
