@@ -1,7 +1,14 @@
 import { createPrivateKey, createPublicKey } from 'node:crypto';
 
 import { InvalidInput } from '@ftgo/common';
-import { calculateJwkThumbprint, exportJWK, importPKCS8, importSPKI, type JWK } from 'jose';
+import {
+  calculateJwkThumbprint,
+  exportJWK,
+  importPKCS8,
+  importSPKI,
+  type CryptoKey,
+  type JWK,
+} from 'jose';
 
 import { SIGNING_ALGORITHM } from '../auth.constants.js';
 
