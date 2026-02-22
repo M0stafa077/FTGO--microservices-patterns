@@ -6,6 +6,7 @@ export { Public } from './auth/public.decorator.js';
 export { Requires } from './auth/requires.decorator.js';
 export { CompiledSchema } from './config/compiled-schema.js';
 export { Environment } from './config/environment.js';
+export { CORRELATION_ID_HEADER } from './infrastructure.constants.js';
 export { CorrelationIds } from './http/correlation-ids.js';
 export type { ProblemDetails } from './http/problem-details.js';
 export { ProblemDetailsFilter } from './http/problem-details.filter.js';

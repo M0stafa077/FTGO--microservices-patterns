@@ -30,6 +30,9 @@
     },
     {
       "path": "apps/delivery-service"
+    },
+    {
+      "path": "apps/api-gateway"
     }
   ]
 }
