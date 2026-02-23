@@ -1,4 +1,6 @@
 export { MessagingConfig } from './config/messaging-config.js';
+export { ConsumerGroupActive } from './kafka/errors/consumer-group-active.js';
+export { KafkaConsumerGroups } from './kafka/kafka-consumer-groups.js';
 export { MessagingHealth } from './health/messaging-health.js';
 export { MessagingModule } from './messaging.module.js';
 export type { MessagingOptions } from './messaging-options.js';

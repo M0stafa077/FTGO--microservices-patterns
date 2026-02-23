@@ -18,4 +18,8 @@ export class IncomingMessage<Payload> {
   public get correlationId(): string {
     return this.headers.get(HeaderName.CorrelationId);
   }
+
+  public get timestamp(): Date {
+    return new Date(this.headers.get(HeaderName.Timestamp));
+  }
 }
