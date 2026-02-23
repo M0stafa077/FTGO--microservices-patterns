@@ -54,7 +54,8 @@ services:
       timeout: 10s
       retries: 30
 
-  # One-shot job: creates the topics listed in infra/kafka/topics.txt, then exits.
+  # One-shot job: creates the topics listed in infra/kafka/topics.txt, keeps every event
+  # topic's messages forever (a view or a replica rebuilds from offset zero), then exits.
   kafka-init:
     image: apache/kafka:4.0.0
     depends_on:
@@ -68,6 +69,10 @@ services:
         grep -v -e '^#' -e '^$$' /topics.txt | while read -r topic; do
           /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 \
             --create --if-not-exists --topic "$$topic" --partitions 3 --replication-factor 1
+        done
+        grep '\.events$$' /topics.txt | while read -r topic; do
+          /opt/kafka/bin/kafka-configs.sh --bootstrap-server kafka:29092 \
+            --alter --entity-type topics --entity-name "$$topic" --add-config retention.ms=-1
         done
     restart: 'no'
 
