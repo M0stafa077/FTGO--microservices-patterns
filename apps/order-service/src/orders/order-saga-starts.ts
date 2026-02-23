@@ -72,6 +72,10 @@ export class OrderSagaStarts implements OrderEventTranslation<Promise<void>> {
     await Promise.resolve();
   }
 
+  public async orderRevised(): Promise<void> {
+    await Promise.resolve();
+  }
+
   private payloadOf(money: Money): MoneyPayload {
     return { amount: money.amount, currency: money.currency.toString() };
   }

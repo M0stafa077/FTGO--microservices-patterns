@@ -1,4 +1,10 @@
-import { OrderAuthorized, OrderCancelled, OrderCreated, OrderRejected } from '@ftgo/contracts';
+import {
+  OrderAuthorized,
+  OrderCancelled,
+  OrderCreated,
+  OrderRejected,
+  OrderRevised,
+} from '@ftgo/contracts';
 import { OutgoingMessage } from '@ftgo/messaging';
 import { Injectable } from '@nestjs/common';
 
@@ -8,6 +14,7 @@ import type { OrderEventTranslation } from './entities/order-event-translation.j
 import type { OrderEvent } from './entities/order-event.js';
 import type { OrderPlaced } from './entities/order-placed.js';
 import type { OrderRejected as OrderRejectedEvent } from './entities/order-rejected.js';
+import type { OrderRevised as OrderRevisedEvent } from './entities/order-revised.js';
 import type { Order } from './entities/order.entity.js';
 import { PublishedOrder } from './published-order.js';
 
@@ -60,5 +67,18 @@ export class OrderEventMessages implements OrderEventTranslation<ReadonlyArray<O
 
   public orderRevisionProposed(): ReadonlyArray<OutgoingMessage> {
     return [];
+  }
+
+  public orderRevised(event: OrderRevisedEvent): ReadonlyArray<OutgoingMessage> {
+    const { order } = event;
+    const orderId = order.id.toString();
+    const published = new PublishedOrder(order);
+    return [
+      OutgoingMessage.event(OrderRevised, orderId, {
+        orderId,
+        lineItems: published.lineItems(),
+        orderTotal: published.total(),
+      }),
+    ];
   }
 }

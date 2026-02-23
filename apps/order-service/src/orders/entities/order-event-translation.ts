@@ -3,6 +3,7 @@ import type { OrderCancellationRequested } from './order-cancellation-requested.
 import type { OrderCancelled } from './order-cancelled.js';
 import type { OrderPlaced } from './order-placed.js';
 import type { OrderRejected } from './order-rejected.js';
+import type { OrderRevised } from './order-revised.js';
 import type { OrderRevisionProposed } from './order-revision-proposed.js';
 
 export interface OrderEventTranslation<T> {
@@ -17,4 +18,6 @@ export interface OrderEventTranslation<T> {
   orderCancelled(event: OrderCancelled): T;
 
   orderRevisionProposed(event: OrderRevisionProposed): T;
+
+  orderRevised(event: OrderRevised): T;
 }

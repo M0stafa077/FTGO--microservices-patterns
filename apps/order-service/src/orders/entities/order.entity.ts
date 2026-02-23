@@ -18,6 +18,7 @@ import { OrderLineItem } from './order-line-item.js';
 import { OrderLineItems } from './order-line-items.js';
 import { OrderPlaced } from './order-placed.js';
 import { OrderRejected } from './order-rejected.js';
+import { OrderRevised } from './order-revised.js';
 import { OrderRevisionProposed } from './order-revision-proposed.js';
 import type { OrderSnapshot } from './order-snapshot.js';
 import { OrderState } from './order-state.js';
@@ -141,6 +142,7 @@ export class Order {
     const revised = this.currentLineItems.revisedWith(revisions);
     this.move(OrderState.RevisionPending, OrderState.Approved, now);
     this.currentLineItems = revised;
+    this.pendingEvents.push(new OrderRevised(this));
   }
 
   public isPlacedBy(consumerId: ConsumerId): boolean {

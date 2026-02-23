@@ -29,9 +29,11 @@ export { OrderLineItem } from './order/schemas/order-line-item.schema.js';
 export { OrderAuthorized } from './order/order-authorized.js';
 export { OrderRejected } from './order/order-rejected.js';
 export { OrderCancelled } from './order/order-cancelled.js';
+export { OrderRevised } from './order/order-revised.js';
 export { OrderAuthorizedPayload } from './order/schemas/order-authorized-payload.schema.js';
 export { OrderRejectedPayload } from './order/schemas/order-rejected-payload.schema.js';
 export { OrderCancelledPayload } from './order/schemas/order-cancelled-payload.schema.js';
+export { OrderRevisedPayload } from './order/schemas/order-revised-payload.schema.js';
 export {
   KITCHEN_SERVICE_COMMANDS,
   TICKET_AGGREGATE,
