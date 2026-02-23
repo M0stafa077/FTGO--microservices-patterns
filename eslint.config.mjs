@@ -462,7 +462,12 @@ export default defineConfig([
   })),
 
   {
-    files: ['apps/*/src/main.ts', 'apps/*/src/migrate.ts', 'apps/*/src/grant-admin.ts'],
+    files: [
+      'apps/*/src/main.ts',
+      'apps/*/src/migrate.ts',
+      'apps/*/src/grant-admin.ts',
+      'apps/*/src/rebuild.ts',
+    ],
     rules: {
       'no-restricted-syntax': [
         'error',
