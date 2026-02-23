@@ -5,4 +5,5 @@ export enum ServiceName {
   Kitchen = 'kitchen',
   Delivery = 'delivery',
   Accounting = 'accounting',
+  OrderHistory = 'order-history',
 }

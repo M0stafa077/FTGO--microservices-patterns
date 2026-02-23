@@ -26,6 +26,11 @@ export const ServicesEnvironment = Type.Object({
     maxLength: 2048,
     default: 'http://localhost:8085',
   }),
+  ORDER_HISTORY_SERVICE_URL: Type.String({
+    pattern: '^https?://',
+    maxLength: 2048,
+    default: 'http://localhost:8086',
+  }),
   DELIVERY_SERVICE_URL: Type.String({
     pattern: '^https?://',
     maxLength: 2048,

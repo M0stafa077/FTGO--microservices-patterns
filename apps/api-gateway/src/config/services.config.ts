@@ -38,6 +38,8 @@ export class ServicesConfig {
         return this.variables.DELIVERY_SERVICE_URL;
       case ServiceName.Accounting:
         return this.variables.ACCOUNTING_SERVICE_URL;
+      case ServiceName.OrderHistory:
+        return this.variables.ORDER_HISTORY_SERVICE_URL;
       default: {
         const unreachable: never = service;
         return unreachable;
