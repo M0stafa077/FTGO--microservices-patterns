@@ -32,6 +32,9 @@
       "path": "apps/delivery-service"
     },
     {
+      "path": "apps/order-history-service"
+    },
+    {
       "path": "apps/api-gateway"
     }
   ]
