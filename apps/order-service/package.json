@@ -28,10 +28,10 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "start": "node --enable-source-maps dist/main.js",
+    "start": "node --enable-source-maps --import ./dist/tracing.js dist/main.js",
     "start:dev": "tsc -b && pnpm run --parallel \"/^dev:/\"",
     "dev:compile": "tsc -b -w --preserveWatchOutput",
-    "dev:run": "node --enable-source-maps --env-file-if-exists=../../.env --watch-path=dist dist/main.js | pino-pretty",
+    "dev:run": "node --enable-source-maps --env-file-if-exists=../../.env --watch-path=dist --import ./dist/tracing.js dist/main.js | pino-pretty",
     "migrate": "node --enable-source-maps --env-file-if-exists=../../.env dist/migrate.js"
   }
 }

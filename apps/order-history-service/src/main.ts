@@ -8,10 +8,11 @@ import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module.js';
 import { AppConfig } from './config/app.config.js';
+import { tracing } from './tracing.js';
 
 async function bootstrap(): Promise<void> {
   const config = AppConfig.fromEnvironment(new Environment(process.env));
-  const app = await NestFactory.create<NestExpressApplication>(AppModule.with(config), {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule.with(config, tracing), {
     bufferLogs: true,
   });
   app.useLogger(app.get(Logger));

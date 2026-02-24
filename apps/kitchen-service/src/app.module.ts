@@ -3,7 +3,9 @@ import {
   ClockModule,
   LoggingModule,
   ProblemDetailsFilter,
+  TracingModule,
 } from '@ftgo/common/infrastructure';
+import type { Tracing } from '@ftgo/common/tracing';
 import { MessagingModule } from '@ftgo/messaging/infrastructure';
 import { Module, type DynamicModule } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
@@ -17,11 +19,12 @@ import { TicketsModule } from './tickets/tickets.module.js';
 
 @Module({})
 export class AppModule {
-  public static with(config: AppConfig): DynamicModule {
+  public static with(config: AppConfig, tracing: Tracing): DynamicModule {
     return {
       module: AppModule,
       imports: [
         LoggingModule.with({ level: config.logLevel }),
+        TracingModule.with(tracing),
         ClockModule,
         AccessModule.with(config.access),
         DatabaseModule.with(config.database),
