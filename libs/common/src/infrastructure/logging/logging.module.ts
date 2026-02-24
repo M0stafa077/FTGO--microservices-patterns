@@ -14,6 +14,7 @@ import { ALL_ROUTES } from '../infrastructure.constants.js';
 
 import { CorrelationScope } from './correlation-scope.js';
 import type { LoggingOptions } from './logging-options.js';
+import { SpanLogFields } from './span-log-fields.js';
 
 @Global()
 @Module({})
@@ -30,12 +31,13 @@ export class LoggingModule implements NestModule {
 
   private static pinoParameters(options: LoggingOptions, scope: CorrelationScope): Params {
     const correlationIds = new CorrelationIds();
+    const spanFields = new SpanLogFields();
     return {
       pinoHttp: {
         level: options.level,
         genReqId: (request, response) => correlationIds.assign(request, response),
         customAttributeKeys: { reqId: 'correlationId' },
-        mixin: () => ({ correlationId: scope.current() }),
+        mixin: () => ({ correlationId: scope.current(), ...spanFields.current() }),
         autoLogging: { ignore: (request) => request.url?.startsWith('/health') === true },
         redact: {
           paths: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]'],

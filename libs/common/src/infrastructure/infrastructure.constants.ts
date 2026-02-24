@@ -1,4 +1,5 @@
 export const CORRELATION_ID_HEADER = 'x-correlation-id';
+export const CORRELATION_ID_ATTRIBUTE = 'ftgo.correlation_id';
 export const CORRELATION_ID_FORMAT = /^[A-Za-z0-9._-]{1,128}$/;
 export const FIRST_SERVER_ERROR_STATUS = 500;
 export const UNAUTHORIZED_STATUS = 401;
