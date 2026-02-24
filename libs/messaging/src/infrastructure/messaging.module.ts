@@ -27,6 +27,8 @@ import { MessageHandlers } from './receiving/message-handlers.js';
 import { OutboxBatches } from './relay/outbox-batches.js';
 import { OutboxRelay } from './relay/outbox-relay.js';
 import { RetentionCleanup } from './relay/retention-cleanup.js';
+import { MessageTracing } from './tracing/message-tracing.js';
+import { TracingMessageBroker } from './tracing/tracing-message-broker.js';
 import { PayloadSchemas } from './validation/payload-schemas.js';
 
 @Module({})
@@ -40,6 +42,7 @@ export class MessagingModule {
         ...MessagingModule.connectionProviders(options),
         ...MessagingModule.sendingProviders(),
         ...MessagingModule.receivingProviders(),
+        MessageTracing,
         MessagingHealth,
         MessagingLifecycle,
       ],
@@ -52,7 +55,7 @@ export class MessagingModule {
       { provide: MessagingOptions, useValue: options },
       { provide: KafkaJS.Kafka, useFactory: (): KafkaJS.Kafka => MessagingModule.kafka(options) },
       KafkaMessageBroker,
-      { provide: MessageBroker, useExisting: KafkaMessageBroker },
+      { provide: MessageBroker, useClass: TracingMessageBroker },
     ];
   }
 

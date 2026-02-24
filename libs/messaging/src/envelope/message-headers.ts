@@ -24,6 +24,10 @@ export class MessageHeaders {
     return new MessageHeaders(new Map([...this.values, [name, value]]));
   }
 
+  public including(other: MessageHeaders): MessageHeaders {
+    return new MessageHeaders(new Map([...this.values, ...other.values]));
+  }
+
   public find(name: HeaderName): string | undefined {
     return this.values.get(name);
   }

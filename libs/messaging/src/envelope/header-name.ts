@@ -10,4 +10,6 @@ export enum HeaderName {
   SagaId = 'sagaId',
   InReplyTo = 'inReplyTo',
   Outcome = 'outcome',
+  TraceParent = 'traceparent',
+  TraceState = 'tracestate',
 }

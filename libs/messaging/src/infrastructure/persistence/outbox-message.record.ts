@@ -20,7 +20,8 @@ export class OutboxMessageRecord {
     const headers = this.message.headers
       .with(HeaderName.MessageId, this.envelope.messageId)
       .with(HeaderName.Timestamp, this.envelope.createdAt.toISOString())
-      .with(HeaderName.CorrelationId, this.envelope.correlationId);
+      .with(HeaderName.CorrelationId, this.envelope.correlationId)
+      .including(this.envelope.traceHeaders);
     return {
       id: this.envelope.messageId,
       topic: this.message.channel,

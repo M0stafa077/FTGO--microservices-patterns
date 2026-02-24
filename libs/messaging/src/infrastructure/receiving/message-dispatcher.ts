@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import type { IncomingMessage } from '../../envelope/incoming-message.js';
 import { InvalidMessage } from '../../errors/invalid-message.js';
+import { MessageTracing } from '../tracing/message-tracing.js';
 
 import { DeliveryAttempts } from './delivery-attempts.js';
 import type { Delivery } from './delivery.js';
@@ -25,11 +26,14 @@ export class MessageDispatcher {
     private readonly effectivelyOnce: EffectivelyOnce,
     private readonly failures: FailureHandlings,
     private readonly correlation: CorrelationScope,
+    private readonly tracing: MessageTracing,
   ) {}
 
   public async dispatch(delivery: Delivery): Promise<Disposition> {
     const attempt = this.attempts.next(delivery);
-    const disposition = await this.route(delivery, attempt);
+    const disposition = await this.tracing.processing(delivery, async () =>
+      this.route(delivery, attempt),
+    );
     if (disposition.isFinal()) {
       this.attempts.forget(delivery);
     }
@@ -72,6 +76,7 @@ export class MessageDispatcher {
   }
 
   private async settle(failure: Failure): Promise<Disposition> {
+    this.tracing.failed(failure);
     try {
       return await this.failures.for(failure.error).handle(failure);
     } catch (error) {

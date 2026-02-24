@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import type { OutgoingMessage } from '../../envelope/outgoing-message.js';
 import type { Outbox } from '../../outbox.js';
+import { MessageTracing } from '../tracing/message-tracing.js';
 import { PayloadSchemas } from '../validation/payload-schemas.js';
 
 import { MessagingDatabase } from './messaging-database.js';
@@ -16,14 +17,18 @@ export class PostgresOutbox implements Outbox {
     @Inject(Clock) private readonly clock: Clock,
     private readonly correlation: CorrelationScope,
     private readonly payloads: PayloadSchemas,
+    private readonly tracing: MessageTracing,
   ) {}
 
   public async append(message: OutgoingMessage): Promise<void> {
     this.payloads.validate(message.schema, message.payload);
+    const { messageId } = message;
+    const correlationId = this.correlation.current() ?? messageId;
     const record = OutboxMessageRecord.from(message, {
-      messageId: message.messageId,
+      messageId,
       createdAt: this.clock.now(),
-      correlationId: this.correlation.current() ?? message.messageId,
+      correlationId,
+      traceHeaders: this.tracing.created(message, messageId, correlationId),
     });
     try {
       await this.database.current().insertInto('outboxMessages').values(record.toRow()).execute();
