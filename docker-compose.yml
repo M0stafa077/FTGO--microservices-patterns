@@ -87,6 +87,12 @@ services:
       KAFKA_CLUSTERS_0_NAME: ftgo
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
 
+  jaeger:
+    image: jaegertracing/jaeger:2.15.1
+    ports:
+      - '${JAEGER_UI_PORT:-16686}:16686'
+      - '${OTLP_HTTP_PORT:-4318}:4318'
+
 volumes:
   postgres-data:
   kafka-data:
